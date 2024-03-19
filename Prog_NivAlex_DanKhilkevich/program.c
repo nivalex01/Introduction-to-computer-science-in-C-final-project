@@ -45,4 +45,5 @@ void main()
     printf("Number of lines in SportsmanData.txt: %d\n", sportsmanLines);
     printf("Number of lines in EventData.txt: %d\n", eventLines);
     printf("hapoel zona");
+    printf("maccabi hole")
 }
