@@ -44,5 +44,5 @@ void main()
     int eventLines = countLines("EventData.txt");
     printf("Number of lines in SportsmanData.txt: %d\n", sportsmanLines);
     printf("Number of lines in EventData.txt: %d\n", eventLines);
-    printf("hello world this is a test");
+    
 }
