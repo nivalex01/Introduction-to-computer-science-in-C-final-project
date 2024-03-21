@@ -203,6 +203,5 @@ int main()
         free(sportsmen_array[i].p2events);
     }
     free(sportsmen_array);
-    printf("hey");
     return 0;
 }
