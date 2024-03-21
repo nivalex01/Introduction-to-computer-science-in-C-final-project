@@ -2,8 +2,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include <string.h>
-#define MAX_LINE_LENGTH 100
-#define MAX_NAME_LENGTH  15
+
 
 typedef struct
 {
@@ -104,6 +103,62 @@ void FromFile2Sportsman(const char* filename, sportsman* sportsmen_array[], int 
     fclose(file);
 }
 
+
+void FromFile2Events(const char* filename, sportsman* sportsmen_array[], int sportsmen_array_size) {
+
+    FILE* file = fopen(filename, "r");
+
+    int lines = countLines(filename);
+
+    if (file == NULL)
+    {
+        printf("Error opening file %s\n", filename);
+        exit(1);
+    }
+    
+    event* event_arr;
+
+    event_arr = (event *)malloc(lines * sizeof(event));  // allocate memory for sportsmen array;
+    if (event_arr == NULL) // allocate memory checking
+    {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+
+    char line[100];
+
+    fgets(line, sizeof(line), file);  // skip the format line (the first line)
+    int event_count = 0;
+    
+    int id;
+    
+    
+    while (fgets(line, sizeof(line), file) != NULL && event_count < lines)//read line by line from the file
+    {
+       
+        printf("hello");
+        if (sscanf(line, "%d,%[^,],%[^,],%d", &id,event_arr[event_count].p2title,event_arr[event_count].p2location,&(event_arr[event_count].year)) == 4)
+        {
+            printf("%d,%s,%s,%d\n", id, event_arr[event_count].p2title, event_arr[event_count].p2location, event_arr[event_count].year);
+        }
+        else
+        {
+            printf("Error reading data from file\n");
+            exit(1);
+        }
+        
+
+        event_count++;
+    }  
+
+    
+    for (int i = 0;  i < lines;  i++)
+    {
+        printf("%d,%d,%d",*(event_arr[i].p2title),*(event_arr[i].p2location),event_arr[i].year);
+    }
+
+}
+
 void main() {
     int numSportsmen = countLines("SportsmanData.txt");
 
@@ -112,6 +167,8 @@ void main() {
     sportsman* sportsmen = NULL; //pointer to sportsmen array
 
     FromFile2Sportsman("SportsmanData.txt", &sportsmen, numSportsmen);
+    
+    FromFile2Events("EventData.txt", &sportsmen, numSportsmen);
    
     free(sportsmen);  // free allocated memory for sportsmen array
 }
