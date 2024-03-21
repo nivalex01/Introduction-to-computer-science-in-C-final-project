@@ -4,6 +4,7 @@
 #include <string.h>
 #define MAX_LINE_LENGTH 100
 #define MAX_NAME_LENGTH  15
+
 typedef struct
 {
     char* p2title;  //event name  
