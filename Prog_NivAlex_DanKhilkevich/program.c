@@ -22,6 +22,7 @@ typedef struct {
     int Nevents; //number of participated events
 }sportsman;
 
+
 void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
 {
     for (int i = 0; i < num_sportsmen; ++i) {
@@ -53,7 +54,8 @@ void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
         }
         printf("\n");
     }
-}
+} //
+
 
 void print_Sportman_participated_events(sportsman* sportsmen_array, int num_sportsmen) 
 {
@@ -102,6 +104,7 @@ int countLines(const char* filename)
     fclose(file_ptr);
     return number_of_lines;
 }
+
 
 void FromFile2Sportsman(const char* filename, sportsman** sportsmen_array, int sportsmen_array_size)
 {
@@ -153,6 +156,7 @@ void FromFile2Sportsman(const char* filename, sportsman** sportsmen_array, int s
     }
     fclose(file);
 }
+
 
 void FromFile2Events(const char* filename, sportsman* sportsmen_array, int num_sportsmen)
 {
@@ -214,6 +218,7 @@ void FromFile2Events(const char* filename, sportsman* sportsmen_array, int num_s
     fclose(file); //close EventData.txt file
 }
 
+
 int check_if_sportsman_already_exists(sportsman* sportsmen_array[], int new_sportman_id, int sportsmen_array_size)
 {
     // Check if the sportsman already exists in the array
@@ -227,6 +232,7 @@ int check_if_sportsman_already_exists(sportsman* sportsmen_array[], int new_spor
     }
     return 1; // The sportsman does not exist in the array
 }
+
 
 int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
 {
@@ -279,7 +285,7 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
     return 1; // successed to add new sportman to the array
 }
 
-// Function to find a sportsman by ID
+
 sportsman* find_Sportsman_ByID(int id, sportsman* sportsmen_array[], int* sportsmen_array_size)
 {
     if (sportsmen_array == NULL || sportsmen_array_size == NULL) {
@@ -301,7 +307,8 @@ sportsman* find_Sportsman_ByID(int id, sportsman* sportsmen_array[], int* sports
     }
 
     return NULL; // Sportsman with the given ID not found
-}
+} // Function to find a sportsman by ID
+
 
 void freeEventsMemory(sportsman* sportsmen_array, int sportsmen_array_size) 
 {
@@ -313,10 +320,12 @@ void freeEventsMemory(sportsman* sportsmen_array, int sportsmen_array_size)
     }
 }
 
+
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
+
 
 int isEventExist(event* events_array, int num_events, const char* event_name, const char* location, int year)
 {
@@ -344,6 +353,7 @@ int isEventExist(event* events_array, int num_events, const char* event_name, co
     }
     return 0; // event does not exist
 }
+
 
 int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_size) {
     char event_name[30], location[30];
@@ -416,6 +426,7 @@ int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_siz
     return 1; // Event added successfully
 }
 
+
 int printMenu()
 {
     int choice = 0; // Initialize choice variable
@@ -437,6 +448,7 @@ int printMenu()
 
     return choice; // Return the user's choice
 }
+
 
 void Write_array_to_Sportsman_data(const char* filename, sportsman* sportsmen_array, int num_sportsmen)
 {
@@ -464,9 +476,11 @@ void Write_array_to_Sportsman_data(const char* filename, sportsman* sportsmen_ar
     printf("Array successfully written to %s.\n", filename);
 }
 
+
 void Write_array_to_Event_Data(const char* filename, sportsman* sportsmen_array, int num_sportsmen)
 {
-    FILE* file_dest = fopen(filename, "a"); // Open the file in append mode
+    FILE* file_source = fopen(filename, "r");
+    FILE* file_dest = fopen(filename, "w");
     if (file_dest == NULL)
     {
         printf("Error: Could not open file %s for writing.\n", filename);
@@ -485,10 +499,11 @@ void Write_array_to_Event_Data(const char* filename, sportsman* sportsmen_array,
                 sportsmen_array[sportman_index].p2events[event_index].year);
         }
     }
-
+    fclose(file_source);
     fclose(file_dest);
     printf("Events successfully written to %s.\n", filename);
 }
+
 
 sportsman* getSportsmanByID(int sportsman_id, sportsman* sportsmen_array, int num_sportsmen)
 {
@@ -502,6 +517,7 @@ sportsman* getSportsmanByID(int sportsman_id, sportsman* sportsmen_array, int nu
     // If the sportsman with the given ID is not found, return NULL
     return NULL;
 }
+
 
 void main()
 {
@@ -538,6 +554,7 @@ void main()
             if (addEvent(sportsmen_array,selected_id,&num_sportsmen) == 1)
             {
                 printf("Event added successfully.\n");
+                Write_array_to_Event_Data("EventData.txt", sportsmen_array, num_sportsmen);
             }
             else
             {
