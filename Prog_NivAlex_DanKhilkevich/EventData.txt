@@ -1,4 +1,4 @@
-﻿format:sportsman_id,event_name,location,year
+format:sportsman_id,event_name,location,year
 3,World Cup,USA,2006
 1,College Championship,France,2020
 3,European Championship,Germany,2019

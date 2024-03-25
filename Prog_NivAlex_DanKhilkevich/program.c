@@ -22,18 +22,34 @@ typedef struct {
     int Nevents; //number of participated events
 }sportsman;
 
-void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)  //פונקצית עזר הדפסת מערך ספורטאים
+void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
 {
     for (int i = 0; i < num_sportsmen; ++i) {
         printf("Sportsman %d:\n", sportsmen_array[i].id);
         printf("First Name: %s\n", sportsmen_array[i].Fname);
         printf("Last Name: %s\n", sportsmen_array[i].Lname);
-        printf("Club: %s\n", sportsmen_array[i].p2club);
+
+        // Check if p2club is not NULL before printing
+        if (sportsmen_array[i].p2club != NULL) {
+            printf("Club: %s\n", sportsmen_array[i].p2club);
+        }
+        else {
+            printf("Club: Not specified\n");
+        }
+
         printf("Gender: %d\n", sportsmen_array[i].gen);
         printf("Number of Events: %d\n", sportsmen_array[i].Nevents);
         printf("Events:\n");
-        for (int j = 0; j < sportsmen_array[i].Nevents; ++j) {
-            printf("- %s, %s, %d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
+
+        // Check if p2events is not NULL before accessing
+        if (sportsmen_array[i].p2events != NULL) {
+            for (int j = 0; j < sportsmen_array[i].Nevents; ++j) {
+                printf("- Event %d: %s, %s, %d\n", j + 1, sportsmen_array[i].p2events[j].p2title,
+                    sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
+            }
+        }
+        else {
+            printf("No events registered\n");
         }
         printf("\n");
     }
@@ -41,15 +57,25 @@ void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)  //פונקצ
 
 void print_Sportman_participated_events(sportsman* sportsmen_array, int num_sportsmen) 
 {
-    for (int sportman_index = 0; sportman_index < num_sportsmen; sportman_index++)  //print for each sportsman his participated events. //running on sportsman array
-  {
-      printf("%s %s events:\n", sportsmen_array[sportman_index].Fname, sportsmen_array[sportman_index].Lname);
-      for (int event_index = 0; event_index < sportsmen_array[sportman_index].Nevents; event_index++) // running on events array 
-      {
-          printf("(-) %s, %s, %d\n", sportsmen_array[sportman_index].p2events[event_index].p2title, sportsmen_array[sportman_index].p2events[event_index].p2location, sportsmen_array[sportman_index].p2events[event_index].year);
-      }
-  }
+    for (int sportman_index = 0; sportman_index < num_sportsmen; sportman_index++) {
+        printf("%s %s events:\n", sportsmen_array[sportman_index].Fname, sportsmen_array[sportman_index].Lname);
+
+        // Check if the sportsman has any events
+        if (sportsmen_array[sportman_index].Nevents == 0 || sportsmen_array[sportman_index].p2events == NULL) {
+            printf("No events participated.\n");
+            continue; // Move to the next sportsman
+        }
+
+        // Print each event the sportsman participated in
+        for (int event_index = 0; event_index < sportsmen_array[sportman_index].Nevents; event_index++) {
+            printf("(-) %s, %s, %d\n",
+                sportsmen_array[sportman_index].p2events[event_index].p2title,
+                sportsmen_array[sportman_index].p2events[event_index].p2location,
+                sportsmen_array[sportman_index].p2events[event_index].year);
+        }
+    }
 }
+
 
 int countLines(const char* filename)
 {
@@ -77,9 +103,8 @@ int countLines(const char* filename)
     return number_of_lines;
 }
 
-void FromFile2Sportsman(const char* filename, sportsman* sportsmen_array[], int sportsmen_array_size)
+void FromFile2Sportsman(const char* filename, sportsman** sportsmen_array, int sportsmen_array_size)
 {
-
     FILE* file = fopen(filename, "r");
     if (file == NULL)
     {
@@ -87,8 +112,7 @@ void FromFile2Sportsman(const char* filename, sportsman* sportsmen_array[], int 
         exit(1);
     }
 
-    *sportsmen_array = malloc(sportsmen_array_size * sizeof(sportsman));  // allocate memory for sportsmen array;
-
+    *sportsmen_array = malloc(sportsmen_array_size * sizeof(sportsman)); // allocate memory for sportsmen array;
     if (*sportsmen_array == NULL) // allocate memory checking
     {
         printf("Memory allocation failed\n");
@@ -97,33 +121,35 @@ void FromFile2Sportsman(const char* filename, sportsman* sportsmen_array[], int 
 
     char line[100];
 
-    fgets(line, sizeof(line), file);  // skip the format line (the first line)
-    int sportmen_count = 0;
+    fgets(line, sizeof(line), file); // skip the format line (the first line)
+    int sportsmen_count = 0;
 
-    while (fgets(line, sizeof(line), file) != NULL && sportmen_count < sportsmen_array_size)  //read line by line from the file 
+    while (fgets(line, sizeof(line), file) != NULL && sportsmen_count < sportsmen_array_size) // read line by line from the file
     {
         int gen;
         char clubName[100]; // temporary buffer for club name, club name = maximum of 100 chars
 
-        if (sscanf(line, "%d;%[^;];%[^;];%[^;];%d", &((*sportsmen_array)[sportmen_count].id), (*sportsmen_array)[sportmen_count].Fname,
-            (*sportsmen_array)[sportmen_count].Lname, clubName, &gen) != 5)
+        if (sscanf(line, "%d;%[^;];%[^;];%[^;];%d", &((*sportsmen_array)[sportsmen_count].id),
+            (*sportsmen_array)[sportsmen_count].Fname,
+            (*sportsmen_array)[sportsmen_count].Lname, clubName, &gen) != 5)
         {
             printf("Error reading data from file\n");
             exit(1);
         }
-        (*sportsmen_array)[sportmen_count].gen = gen;
-        (*sportsmen_array)[sportmen_count].Nevents = 0;
-        (*sportsmen_array)[sportmen_count].p2events = NULL;
-        // dynamically allocate memory to p2club based on the length of clubName
-        (*sportsmen_array)[sportmen_count].p2club = malloc((strlen(clubName) + 1) * sizeof(char));
-        if ((*sportsmen_array)[sportmen_count].p2club == NULL)
+        (*sportsmen_array)[sportsmen_count].gen = gen;
+        (*sportsmen_array)[sportsmen_count].Nevents = 0;
+        (*sportsmen_array)[sportsmen_count].p2events = NULL;
+
+        // Dynamically allocate memory to p2club based on the length of clubName
+        (*sportsmen_array)[sportsmen_count].p2club = malloc((strlen(clubName) + 1) * sizeof(char));
+        if ((*sportsmen_array)[sportsmen_count].p2club == NULL)
         {
             printf("Memory allocation failed\n");
             exit(1);
         }
-        strcpy((*sportsmen_array)[sportmen_count].p2club, clubName);
-        free((*sportsmen_array)[sportmen_count].p2club);
-        sportmen_count++;
+        strcpy((*sportsmen_array)[sportsmen_count].p2club, clubName);
+
+        sportsmen_count++;
     }
     fclose(file);
 }
@@ -188,10 +214,12 @@ void FromFile2Events(const char* filename, sportsman* sportsmen_array, int num_s
     fclose(file); //close EventData.txt file
 }
 
-int check_if_sportsman_already_exists(int new_sportman_id, sportsman* sportsmen_array[], int sportsmen_array_size) 
+int check_if_sportsman_already_exists(sportsman* sportsmen_array[], int new_sportman_id, int sportsmen_array_size)
 {
-    for (int i = 0; i < sportsmen_array_size; i++) {
-        if (sportsmen_array[i]->id == new_sportman_id) 
+    // Check if the sportsman already exists in the array
+    for (int i = 0; i < sportsmen_array_size; i++)
+    {
+        if ((*sportsmen_array)[i].id == new_sportman_id)
         {
             printf("Error: Sportsman with ID %d already exists.\n", new_sportman_id);
             return 0; // The sportsman already exists in the array
@@ -208,7 +236,7 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
     printf("Please enter the new sportsman details:\n");
     printf("Enter the new sportsman ID: ");
     scanf("%d", &new_sportman_id);
-    if (check_if_sportsman_already_exists(new_sportman_id, &sportsmen_array, sportsmen_array_size) == 0) // Check if the sportsman already exists
+    if (check_if_sportsman_already_exists(sportsmen_array, new_sportman_id, *sportsmen_array_size) == 0) // Check if the sportsman already exists
         return 0; // The sportsman already exists in the array, return 0
 
     (*sportsmen_array_size)++; // add +1 to the size of the sportsmen array
@@ -254,13 +282,24 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
 // Function to find a sportsman by ID
 sportsman* find_Sportsman_ByID(int id, sportsman* sportsmen_array[], int* sportsmen_array_size)
 {
+    if (sportsmen_array == NULL || sportsmen_array_size == NULL) {
+        return NULL;
+    }
+
     for (int i = 0; i < *sportsmen_array_size; i++)
     {
-        if (sportsmen_array[i]->id == id)
+        sportsman* current_sportsman = sportsmen_array[i];
+        if (current_sportsman == NULL) {
+            // Handle NULL pointer in the array
+            continue;
+        }
+
+        if (current_sportsman->id == id)
         {
-            return sportsmen_array[i];
+            return current_sportsman; // Found, return the sportsman
         }
     }
+
     return NULL; // Sportsman with the given ID not found
 }
 
@@ -306,68 +345,75 @@ int isEventExist(event* events_array, int num_events, const char* event_name, co
     return 0; // event does not exist
 }
 
-int addEvent(int sportman_id, sportsman* sportsmen_array[], int* sportsmen_array_size)
-{
+int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_size) {
     char event_name[30], location[30];
     int year;
-    sportsman* found_sportsman = find_Sportsman_ByID(sportman_id, sportsmen_array, sportsmen_array_size);
-    if (found_sportsman == NULL)
-    {
-        printf("Error: Sportsman with ID %d not found.\n", sportman_id);
+
+    // Prompt user for event details
+    clearInputBuffer();
+    printf("Enter event name: ");
+    fgets(event_name, sizeof(event_name), stdin);
+    event_name[strcspn(event_name, "\n")] = '\0'; // Remove newline character
+
+    printf("\nEnter event location: ");
+    fgets(location, sizeof(location), stdin);
+    location[strcspn(location, "\n")] = '\0'; // Remove newline character
+
+    printf("\nEnter event year: ");
+    scanf("%d", &year);
+    clearInputBuffer(); // Clear input buffer to remove any leftover newline characters
+
+    // Find the index of the sportsman in the sportsmen array
+    int sportsman_index = -1;
+    for (int i = 0; i < sportmen_arr_size; i++) {
+        if (sportsmen_array[i].id == sportsman_id) {
+            sportsman_index = i;
+            break;
+        }
+    }
+
+    // If the sportsman is not found, return with an error
+    if (sportsman_index == -1) {
+        printf("Error: Sportsman with ID %d not found.\n", sportsman_id);
         return 0;
     }
-    else
-    {
-        found_sportsman->Nevents++; // add 1 to the number of events
-        clearInputBuffer();
-        printf("Enter event name: ");
-        fgets(event_name, sizeof(event_name), stdin);
-        event_name[strcspn(event_name, "\n")] = '\0'; // remove newline character
 
-        printf("\nEnter event location: "); // Add a newline character before prompting for the event location
-        fgets(location, sizeof(location), stdin);
-        location[strcspn(location, "\n")] = '\0'; // remove newline character
-
-        printf("\nEnter event year: "); // Add a newline character before prompting for the event year
-        scanf("%d", &year);
-        clearInputBuffer(); // Clear input buffer to remove any leftover newline characters
-
-        if (isEventExist(found_sportsman->p2events,found_sportsman->Nevents,event_name, location, year)==1) // Check if the event already exists for this sportsman
-        {
-            printf("Error: Event already exists for this sportsman.\n");
-            return 0;
-        }
-
-        else  //event does not exsist, we can add the event
-        {
-
-            found_sportsman->p2events = realloc(found_sportsman->p2events, found_sportsman->Nevents * sizeof(event)); // reallocate memory for the events array
-            if (found_sportsman->p2events == NULL)
-            {
-                printf("Error: Memory allocation failed111.\n");
-                return 0; // Failed to allocate memory
-            }
-            // Allocate memory for the new event name
-            found_sportsman->p2events[found_sportsman->Nevents - 1].p2title = malloc((strlen(event_name) + 1) * sizeof(char));
-            if (found_sportsman->p2events[found_sportsman->Nevents - 1].p2title == NULL)
-            {
-                printf("Error: Memory allocation failed222.\n");
-                return 0; // Failed to allocate memory
-            }
-            strcpy(found_sportsman->p2events[found_sportsman->Nevents - 1].p2title, event_name); // Copy the event name value from the address
-            found_sportsman->p2events[found_sportsman->Nevents - 1].p2location = malloc((strlen(location) + 1) * sizeof(char));
-            if (found_sportsman->p2events[found_sportsman->Nevents - 1].p2location == NULL)
-            {
-                printf("Error: Memory allocation failed333.\n");
-                return 0; // fail to allocate memory
-            }
-            strcpy(found_sportsman->p2events[found_sportsman->Nevents - 1].p2location, location); // Copy the event location value from the address
-            found_sportsman->p2events[found_sportsman->Nevents - 1].year = year; //add event year 
-            return 1; // Event added successfully
-        }
-        
+    // Check if the event already exists
+    if (isEventExist(sportsmen_array[sportsman_index].p2events, sportsmen_array[sportsman_index].Nevents, event_name, location, year) == 1) {
+        printf("Event already exists!!!\n");
+        return 0; // Event already exists
     }
-    freeEventsMemory(sportsmen_array, sportsmen_array_size); //free event memory after adding an event to the event_array. 
+
+    // Reallocate memory for the events array of the sportsman
+    sportsmen_array[sportsman_index].p2events = realloc(sportsmen_array[sportsman_index].p2events, (sportsmen_array[sportsman_index].Nevents + 1) * sizeof(event));
+    if (sportsmen_array[sportsman_index].p2events == NULL) {
+        printf("Error: Memory allocation failed.\n");
+        return 0; // Failed to allocate memory
+    }
+
+    // Allocate memory for the new event details
+    sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title = malloc((strlen(event_name) + 1) * sizeof(char));
+    if (sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title == NULL) {
+        printf("Error: Memory allocation failed.\n");
+        return 0; // Failed to allocate memory
+    }
+
+    sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2location = malloc((strlen(location) + 1) * sizeof(char));
+    if (sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2location == NULL) {
+        printf("Error: Memory allocation failed.\n");
+        free(sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title);
+        return 0; // Failed to allocate memory
+    }
+
+    // Copy event details
+    strcpy(sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title, event_name);
+    strcpy(sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2location, location);
+    sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].year = year;
+
+    // Increment the number of events
+    sportsmen_array[sportsman_index].Nevents++;
+
+    return 1; // Event added successfully
 }
 
 int printMenu()
@@ -380,6 +426,7 @@ int printMenu()
     printf("(1) Add a new sportsman\n");
     printf("(2) Add a new event\n");
     printf("(4) print sportman array\n");
+    printf("(5) print sportman particpated events\n");
 
     // Prompt the user to enter their choice
     printf("Enter your choice: ");
@@ -389,6 +436,71 @@ int printMenu()
     while (getchar() != '\n');
 
     return choice; // Return the user's choice
+}
+
+void Write_array_to_Sportsman_data(const char* filename, sportsman* sportsmen_array, int num_sportsmen)
+{
+    FILE* file_source = fopen("SportsmanData.txt", "r");
+    FILE* file_dest = fopen("SportsmanData.txt", "w");
+    if (file_source == NULL)
+    {
+        printf("Error: Could not open file %s for writing.\n", filename);
+        return;
+    }
+    fprintf(file_dest, "format:sportsman_id;first_name;last_name;club_name;gender\n"); // Write the format line
+    for (int i = 0; i < num_sportsmen; i++) // Write each sportsman's information to the file
+    {
+        fprintf(file_dest, "%d;%s;%s;%s;%d", sportsmen_array[i].id, sportsmen_array[i].Fname,
+            sportsmen_array[i].Lname, sportsmen_array[i].p2club,
+            sportsmen_array[i].gen);
+        if (i != num_sportsmen - 1) //to avoid blank line in the end of the file 
+        {
+            fprintf(file_dest, "\n");
+        }
+    }
+    file_source = file_dest;
+    fclose(file_source);
+    fclose(file_dest);
+    printf("Array successfully written to %s.\n", filename);
+}
+
+void Write_array_to_Event_Data(const char* filename, sportsman* sportsmen_array, int num_sportsmen)
+{
+    FILE* file_dest = fopen(filename, "a"); // Open the file in append mode
+    if (file_dest == NULL)
+    {
+        printf("Error: Could not open file %s for writing.\n", filename);
+        return;
+    }
+
+    // Write each event information to the file
+    for (int sportman_index = 0; sportman_index < num_sportsmen; sportman_index++)
+    {
+        for (int event_index = 0; event_index < sportsmen_array[sportman_index].Nevents; event_index++)
+        {
+            fprintf(file_dest, "%d,%s,%s,%d\n",
+                sportsmen_array[sportman_index].id,
+                sportsmen_array[sportman_index].p2events[event_index].p2title,
+                sportsmen_array[sportman_index].p2events[event_index].p2location,
+                sportsmen_array[sportman_index].p2events[event_index].year);
+        }
+    }
+
+    fclose(file_dest);
+    printf("Events successfully written to %s.\n", filename);
+}
+
+sportsman* getSportsmanByID(int sportsman_id, sportsman* sportsmen_array, int num_sportsmen)
+{
+    // Iterate through the sportsmen array to find the sportsman with the given ID
+    for (int i = 0; i < num_sportsmen; i++) {
+        if (sportsmen_array[i].id == sportsman_id) {
+            // Return a pointer to the found sportsman
+            return &sportsmen_array[i];
+        }
+    }
+    // If the sportsman with the given ID is not found, return NULL
+    return NULL;
 }
 
 void main()
@@ -411,18 +523,19 @@ void main()
             if (addSportsman(&sportsmen_array, &num_sportsmen) == 1)
             {
                 printf("Sportsman added successfully.\n");
+                Write_array_to_Sportsman_data("SportsmanData.txt", sportsmen_array, num_sportsmen);
             }
             else
             {
                 printf("Failed to add sportsman.\n");
             }
         }
-        else if (choice == 2) // Add a new event
+        else if (choice == 2) // Add new event
         {
             printf("Enter the sportsman ID for whom you want to add an event: ");
             int selected_id;
             scanf("%d", &selected_id);
-            if (addEvent(selected_id, &sportsmen_array, &num_sportsmen) == 1)
+            if (addEvent(sportsmen_array,selected_id,&num_sportsmen) == 1)
             {
                 printf("Event added successfully.\n");
             }
@@ -431,15 +544,22 @@ void main()
                 printf("Failed to add event.\n");
             }
         }
+
         else if (choice == 4) // Handle other options
         {
             printSportsmen(sportsmen_array, num_sportsmen);
+        }
+        else if (choice == 5) // Handle other options
+        {
+            print_Sportman_participated_events(sportsmen_array, num_sportsmen);
         }
         else // Invalid choice
         {
             printf("Invalid choice. Please enter a number between 0 and 3.\n");
         }
+
     }
+
 
 
     // Free allocated memory - At the end of the program!!
