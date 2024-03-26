@@ -4,7 +4,7 @@
 #include <string.h>
 #define MAX_LINE_LENGTH 100
 #define MAX_NAME_LENGTH  30
-
+#define MAX_CLUB_NUMBER 100
 //event structure
 typedef struct
 {
@@ -446,8 +446,9 @@ int printMenu()
     printf("(2) Add a new event\n");
     printf("(4) print sportman array\n");
     printf("(5) print sportman particpated events\n");
-    printf("(6) print  specific sportman events\n");
-    printf("(7) print  the number os sportman's the particpated on specific event\n");
+    printf("(6) print specific sportman events\n");
+    printf("(7) print the number os sportman's the particpated on specific event\n");
+    printf("(8) print the best club\n");
     // Prompt the user to enter their choice
     printf("Enter your choice:");
     scanf("%d", &choice);
@@ -640,6 +641,92 @@ int countEvent(const char E[], int Y, sportsman* sportsmen_array, int* num_sport
     return count;
 }
 
+
+
+char* getSportClubName(char* p2club) {
+    // Find the length of the club name
+    size_t length = strlen(p2club);
+
+    // Allocate memory for the club name without the first and last spaces
+    char* club_name = (char*)malloc(length + 1); // Plus one for null terminator
+    if (club_name == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+
+    // Find the index of the first non-space character
+    size_t start = 0;
+    while (p2club[start] == ' ') {
+        start++;
+    }
+
+    // Find the index of the last non-space character
+    size_t end = length - 1;
+    while (end > 0 && p2club[end] == ' ') {
+        end--;
+    }
+
+    // Copy the club name without the leading and trailing spaces
+    size_t j = 0;
+    for (size_t i = start; i <= end; i++) {
+        club_name[j++] = p2club[i];
+    }
+    club_name[j] = '\0'; // Null-terminate the string
+
+    return club_name;
+}
+
+void bestClub(sportsman* sportsmen_array, int* num_sportsmen) 
+{
+    typedef struct {
+        char* Club_Name;
+        int number_of_events;
+    } ClubEvents;
+
+    // Array to store club names and their corresponding event counts
+    ClubEvents array_of_clubs_and_their_events[MAX_CLUB_NUMBER];
+    for (int i = 0; i < MAX_CLUB_NUMBER; i++) {
+        array_of_clubs_and_their_events[i].Club_Name = NULL;
+        array_of_clubs_and_their_events[i].number_of_events = 0;
+    }
+
+    // Iterate through each sportsman and count their events for each club
+    for (int i = 0; i < *num_sportsmen; i++) {
+        sportsman current_sportsman = sportsmen_array[i];
+        char* club_name = getSportClubName(current_sportsman.p2club);
+        int found = 0;
+        for (int j = 0; j < MAX_CLUB_NUMBER; j++) {
+            if (array_of_clubs_and_their_events[j].Club_Name != NULL &&
+                strcmp(array_of_clubs_and_their_events[j].Club_Name, club_name) == 0) {
+                array_of_clubs_and_their_events[j].number_of_events += current_sportsman.Nevents;
+                found = 1;
+                break;
+            }
+            else if (array_of_clubs_and_their_events[j].Club_Name == NULL) {
+                array_of_clubs_and_their_events[j].Club_Name = club_name;
+                array_of_clubs_and_their_events[j].number_of_events += current_sportsman.Nevents;
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            free(club_name); // Free allocated memory if not used
+        }
+    }
+
+    // Find the club with the maximum number of events
+    char* best_club_name = NULL;
+    int max_events = 0;
+    for (int i = 0; i < MAX_CLUB_NUMBER; i++) {
+        if (array_of_clubs_and_their_events[i].Club_Name != NULL &&
+            array_of_clubs_and_their_events[i].number_of_events > max_events) {
+            best_club_name = array_of_clubs_and_their_events[i].Club_Name;
+            max_events = array_of_clubs_and_their_events[i].number_of_events;
+        }
+    }
+    printf("The club which has the biggest number of sportsmen who participated in the events is %s and the number of events is: %d\n", best_club_name, max_events);
+}
+
 void main()
 {
     char sportsman_last_name[MAX_NAME_LENGTH];
@@ -721,9 +808,13 @@ void main()
             while (getchar() != '\n'); // Clear the input buffer
             printf("The number of sportsman who participated in %s in %d is: %d\n ", specific_event_name, specific_event_year, countEvent(specific_event_name, specific_event_year, sportsmen_array, &num_sportsmen));
         }
+        else if (choice == 8) // Handle other options
+        {
+            bestClub(sportsmen_array, &num_sportsmen);
+        }
         else // Invalid choice
         {
-            printf("Invalid choice. Please enter a number between 0 and 7.\n");
+            printf("Invalid choice. Please enter a number between 0 and 8.\n");
         }
 
     }
