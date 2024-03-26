@@ -1,45 +1,45 @@
-format:sportsman_id,event_name,location,year
-3,World Cup,USA,2006
 1,College Championship,France,2020
-3,European Championship,Germany,2019
-2,European Cup,Belgium,2013
 1,World Cup,Belgium,2011
-19,National Championship,Israel,2015
-21,European Championship,Belgium,2011
-4,National Championship, Israel,2020
-3,European Cup,Belgium,2011
-6,European Championship,Canada,2012
-18,European Championship,Belgium,2011
 1,World Championship,Portugal,2018
-9,World Championship,USA,2016
-21,National Championship,Israel,2020
+1,European Championship,UK,2011
+1,National Championship,Israel,2013
+3,World Cup,USA,2006
+3,European Championship,Germany,2019
+3,European Cup,Belgium,2011
+3,National Championship,Israel,2009
+3,World Cup,Portugal,2017
 5,European Cup,Portugal,2008
 5,Euro,UK,2020
-4,European Championship,Germany,2019
-6,World Cup,USA,2006
-1,European Championship,UK,2011
-18,European Championship,Germany,2019
-3,National Championship,Israel,2009
-2,National Championship,Israel,2015
-4,World Cup,Spain,2014
-10,College Championship,UK,2017
-6,European Championship,UK,2016
-7,World Championship,Canada,2012
-7,World Cup,Spain,2014
-10,European Championship,UK,2016
-2,World Cup,UK,2014
 5,World Cup,France,2010
-9,College Championship,Canada,2012
-21,College Championship,France,2020
+6,European Championship,Canada,2012
+6,World Cup,USA,2006
+6,European Championship,UK,2016
 6,European Cup,Portugal,2008
 6,College National Championship,USA,2017
-7,European Cup,Portugal,2011
-10,College Championship,Canada,2012
-3,World Cup,Portugal,2017
-19,European Cup,Portugal,2008
-23,World Cup,USA,2006
-19,World Cup,France,2010
-1,National Championship,Israel,2013
+4,National Championship, Israel,2020
+4,European Championship,Germany,2019
+4,World Cup,Spain,2014
+21,European Championship,Belgium,2011
+21,National Championship,Israel,2020
+21,College Championship,France,2020
 21,World Cup,UK,2014
+2,European Cup,Belgium,2013
+2,National Championship,Israel,2015
+2,World Cup,UK,2014
+7,World Championship,Canada,2012
+7,World Cup,Spain,2014
+7,European Cup,Portugal,2011
+9,World Championship,USA,2016
+9,College Championship,Canada,2012
+10,College Championship,UK,2017
+10,European Championship,UK,2016
+10,College Championship,Canada,2012
+18,European Championship,Belgium,2011
+18,European Championship,Germany,2019
 18,Euro,UK,2020
+19,National Championship,Israel,2015
+19,European Cup,Portugal,2008
+19,World Cup,France,2010
 19,World Cup,Spain,2014
+23,World Cup,USA,2006
+99,ruppin race,kfar monash,2024

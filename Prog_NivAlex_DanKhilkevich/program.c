@@ -3,8 +3,9 @@
 #include<stdlib.h>
 #include <string.h>
 #define MAX_LINE_LENGTH 100
-#define MAX_NAME_LENGTH  15
+#define MAX_NAME_LENGTH  30
 
+//event structure
 typedef struct
 {
     char* p2title;  //event name  
@@ -12,6 +13,7 @@ typedef struct
     int year;   //event year 
 } event;
 
+//sportsman structure
 typedef struct {
     int id; // id of sportsman
     char Fname[10]; //first name 
@@ -22,7 +24,8 @@ typedef struct {
     int Nevents; //number of participated events
 }sportsman;
 
-
+//printSportmen function gets array of sportsmen and number of sportsmen
+// the function prints the details(id,first name,last name, club, gender, Nevents, P2events) for each sportsmen
 void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
 {
     for (int i = 0; i < num_sportsmen; ++i) {
@@ -56,7 +59,8 @@ void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
     }
 } //
 
-
+//print_Sportman_participated_events gets array of sportsmen and number of sportsmen
+// the function prints for each sports men the events that he is participated. 
 void print_Sportman_participated_events(sportsman* sportsmen_array, int num_sportsmen) 
 {
     for (int sportman_index = 0; sportman_index < num_sportsmen; sportman_index++) {
@@ -79,20 +83,20 @@ void print_Sportman_participated_events(sportsman* sportsmen_array, int num_spor
 }
 
 
+//countLines function gets FileName and return the number of lines (without count the first line)
 int countLines(const char* filename)
 {
-    char line[100];
-    FILE* file_ptr = fopen(filename, "r");
+    int number_of_lines = 0; // we don't want to count the first line of the file. 
+    int ch;
+    char line[MAX_LINE_LENGTH];
 
+    FILE* file_ptr = fopen(filename, "r");
     if (file_ptr == NULL)
     {
         printf("Error, can not opening the file\n");
         return -1;
 
     }
-    int number_of_lines = 0; // we don't want to count the first line of the file. 
-    int ch;
-
     while ((ch = fgetc(file_ptr)) != EOF)
     {
         if (ch == '\n')
@@ -100,12 +104,12 @@ int countLines(const char* filename)
             number_of_lines++;
         }
     }
-
     fclose(file_ptr);
     return number_of_lines;
 }
 
-
+//FromFile2Sportsman reads data from "SportsmanData.txt" File and create new sportmen_array with this data.
+//the function gets a pointer to sportsmen_array and the sportsmen_array_size and because it "void" function we worked by reference. 
 void FromFile2Sportsman(const char* filename, sportsman** sportsmen_array, int sportsmen_array_size)
 {
     FILE* file = fopen(filename, "r");
@@ -157,7 +161,8 @@ void FromFile2Sportsman(const char* filename, sportsman** sportsmen_array, int s
     fclose(file);
 }
 
-
+//FromFile2Events reads data from "EeventData.txt" File and create new events_array with this data.
+//the function gets a pointer to sportsmen_array and the sportsmen_array_size and because it "void" function we worked by reference. 
 void FromFile2Events(const char* filename, sportsman* sportsmen_array, int num_sportsmen)
 {
     FILE* file = fopen(filename, "r");
@@ -218,7 +223,8 @@ void FromFile2Events(const char* filename, sportsman* sportsmen_array, int num_s
     fclose(file); //close EventData.txt file
 }
 
-
+//check_if_sportsman_already_exists function gets pointer to sportsmen_array, size,new_sportman_id and check if this sportman
+// already_exists in the sportsmen_array. if it exists the function return 0 and if not the function return 1; 
 int check_if_sportsman_already_exists(sportsman* sportsmen_array[], int new_sportman_id, int sportsmen_array_size)
 {
     // Check if the sportsman already exists in the array
@@ -233,7 +239,9 @@ int check_if_sportsman_already_exists(sportsman* sportsmen_array[], int new_spor
     return 1; // The sportsman does not exist in the array
 }
 
-
+//addSportman function gets pointer to sportmen_arr and pointer to sportsmen_array_size
+// the function add new sportmen to the array and change his size. 
+// note: sportsmen_array is a dynamic array and sportsmen_array_size is a dynamic size so we worked with pointers.  
 int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
 {
     int new_sportman_id;
@@ -438,9 +446,10 @@ int printMenu()
     printf("(2) Add a new event\n");
     printf("(4) print sportman array\n");
     printf("(5) print sportman particpated events\n");
-
+    printf("(6) print  specific sportman events\n");
+    printf("(7) print  the number os sportman's the particpated on specific event\n");
     // Prompt the user to enter their choice
-    printf("Enter your choice: ");
+    printf("Enter your choice:");
     scanf("%d", &choice);
 
     // Clear input buffer
@@ -519,8 +528,123 @@ sportsman* getSportsmanByID(int sportsman_id, sportsman* sportsmen_array, int nu
 }
 
 
+// function to remove leading and trailing whitespace characters from a string
+void trim(char* str) {
+    int start = 0, end = strlen(str) - 1;
+    while (isspace(str[start])) {
+        start++;
+    }
+    while (end > start && isspace(str[end])) {
+        end--;
+    }
+    str[end + 1] = '\0'; // Null-terminate the trimmed string
+    if (start > 0) {
+        // Shift the trimmed string to the beginning of the original string
+        memmove(str, str + start, end - start + 2);
+    }
+}
+
+sportsman* get_sportsman_by_lastname(char sportsman_last_name[], sportsman* sportsmen_array, int* num_sportsmen)
+{
+    trim(sportsman_last_name);
+    // Search for the sportsman with the given last name in the array
+    for (int i = 0; i < num_sportsmen; i++) {
+        // Compare the trimmed input last name with the last name of each sportsman in the array
+        if (strcmp(sportsman_last_name, sportsmen_array[i].Lname) == 0) {
+            return &sportsmen_array[i]; // Return a pointer to the found sportsman
+        }
+    }
+    return NULL; // Return NULL if the sportsman with the given last name is not found
+}
+
+int printEvents(char sportsman_last_name[], sportsman* sportsmen_array, int* num_sportsmen)
+{
+    // Call helper function to get sportsman struct by last name
+    sportsman* found_sportsman = get_sportsman_by_lastname(sportsman_last_name, sportsmen_array, &num_sportsmen);
+
+    // If sportsman with the given last name is found
+    if (found_sportsman != NULL)
+    {
+        if (found_sportsman->p2events == NULL) // Check if the sportsman has no events
+        {
+            printf("No events found for %s %s.\n", found_sportsman->Fname, found_sportsman->Lname);
+            return 0; // Return 1 to indicate no events found
+        }
+        else
+        {
+            printf("Events for %s %s:\n", found_sportsman->Fname, found_sportsman->Lname);
+            // Print each event for the found sportsman
+            for (int j = 0; j < found_sportsman->Nevents; j++)
+            {
+                printf("(-) %s, %s, %d\n", found_sportsman->p2events[j].p2title,
+                    found_sportsman->p2events[j].p2location, found_sportsman->p2events[j].year);
+            }
+        }
+    }
+    else
+    {
+        return -1; // Return -1 to indicate sportsman not found
+    }
+    return 1; // Return 0 to indicate success
+}
+
+// help function to trim leading and trailing spaces from a string this is for countEvent function
+void trim1(char* str) {
+    // Trim leading spaces
+    while (isspace((unsigned char)*str)) {
+        str++;
+    }
+
+    // If the string is now empty, return
+    if (*str == '\0') {
+        return;
+    }
+
+    // Trim trailing spaces
+    char* end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) {
+        end--;
+    }
+
+    // Null-terminate the trimmed string
+    *(end + 1) = '\0';
+}
+
+// function to count the number of sportsmen who participated in event E in the year Y
+int countEvent(const char E[], int Y, sportsman* sportsmen_array, int* num_sportsmen) {
+    int count = 0;
+
+    // Trim event name
+    char trimmed_event_name[50];
+    strcpy(trimmed_event_name, E);
+    trim1(trimmed_event_name);
+
+    // Iterate over each sportsman in the array
+    for (int i = 0; i < *(num_sportsmen); i++) {
+        sportsman current_sportsman = sportsmen_array[i];
+
+        // Check if the current sportsman has participated in the event in the specified year
+        for (int j = 0; j < current_sportsman.Nevents; j++) {
+            // Trim event title from the current sportsman's events
+            char trimmed_event_title[50];
+            strcpy(trimmed_event_title, current_sportsman.p2events[j].p2title);
+            trim1(trimmed_event_title);
+
+            if (strcmp(trimmed_event_title, trimmed_event_name) == 0 && current_sportsman.p2events[j].year == Y) {
+                count++;
+                break;  // No need to continue checking events for this specific sportsman
+            }
+        }
+    }
+
+    return count;
+}
+
 void main()
 {
+    char sportsman_last_name[MAX_NAME_LENGTH];
+    char specific_event_name[MAX_NAME_LENGTH];
+    int specific_event_year;
     int num_sportsmen = countLines("SportsmanData.txt"); //number of sportmens - taken from SportsmanData file. 
     sportsman* sportsmen_array = NULL; //pointer to sportsmen array
     FromFile2Sportsman("SportsmanData.txt", &sportsmen_array, num_sportsmen); //get the sportsman array 
@@ -531,8 +655,8 @@ void main()
         choice = printMenu(); // Print menu and get user choice
         if (choice == 0) // Exit if user chooses 0
         {
-            printf("Exiting...\n");
-            break; // Exit the loop
+            printf("Exiting!\n");
+            exit(0);
         }
         else if (choice == 1) // Add a new sportsman
         {
@@ -570,9 +694,36 @@ void main()
         {
             print_Sportman_participated_events(sportsmen_array, num_sportsmen);
         }
+        else if (choice == 6) 
+        {
+            printf("Enter the last name of the sportsman:");
+            scanf("%s", sportsman_last_name);
+            while (getchar() != '\n'); // Clear the input buffer
+            int result = printEvents(sportsman_last_name, sportsmen_array, &num_sportsmen);
+            if (result == 0) 
+            {
+                printf("events list is empty for this sportsman.\n");
+            }
+            else if (result == -1) {
+                printf("There is no sportman with this last name\n");
+            }
+            else {
+                printf("Events printed successfully\n");
+            }
+        }
+        else if (choice == 7) // Handle other options
+        {
+            printf("Enter the specific event name:");
+            fgets(specific_event_name, sizeof(specific_event_name), stdin);
+            specific_event_name[strcspn(specific_event_name, "\n")] = '\0'; // Remove the newline character
+            printf("Enter the specific event year:");
+            scanf("%d", &specific_event_year);
+            while (getchar() != '\n'); // Clear the input buffer
+            printf("The number of sportsman who participated in %s in %d is: %d\n ", specific_event_name, specific_event_year, countEvent(specific_event_name, specific_event_year, sportsmen_array, &num_sportsmen));
+        }
         else // Invalid choice
         {
-            printf("Invalid choice. Please enter a number between 0 and 3.\n");
+            printf("Invalid choice. Please enter a number between 0 and 7.\n");
         }
 
     }
