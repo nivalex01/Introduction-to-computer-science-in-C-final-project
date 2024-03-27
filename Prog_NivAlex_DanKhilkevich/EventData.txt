@@ -42,4 +42,7 @@
 19,World Cup,France,2010
 19,World Cup,Spain,2014
 23,World Cup,USA,2006
-88,Jump Hi,Bat Yam,2025
+99,Jump Hi,Bat Yam,2025
+88,Run Race,Monash,2023
+88,Run Race,Monash,2025
+88,Run Race,Monash,2028

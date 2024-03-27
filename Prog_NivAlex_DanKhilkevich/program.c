@@ -5,6 +5,7 @@
 #define MAX_LINE_LENGTH 100
 #define MAX_NAME_LENGTH  30
 #define MAX_CLUB_NUMBER 100
+#define MAX_EVENT_NUMBER 100
 //event structure
 typedef struct
 {
@@ -466,11 +467,14 @@ int printMenu()
     printf("(0) Exit\n");
     printf("(1) Add a new sportsman\n");
     printf("(2) Add a new event\n");
-    printf("(4) print sportman array\n");
-    printf("(5) print sportman particpated events\n");
-    printf("(6) print specific sportman events\n");
-    printf("(7) print the number os sportman's the particpated on specific event\n");
-    printf("(8) print the best club\n");
+    printf("(3) print sportman array\n");
+    printf("(4) print sportman particpated events\n");
+    printf("(5) print specific sportman events\n");
+    printf("(6) print the number of sportman's that particpated on specific event\n");
+    printf("(7) print the best club\n");
+    printf("(8) Check the same event\n");
+    printf("(9) Print sorted events\n");
+    printf("(10) Delete an event\n");
     // Prompt the user to enter their choice
     printf("Enter your choice:");
     scanf("%d", &choice);
@@ -781,10 +785,173 @@ void capitalizeFirstLetter(char* str) {
     }
 }
 
+
+int CheckSameEvent(int I, sportsman* sportsmen_array, int* num_sportsmen) {
+    int flag = 0;
+    sportsman* current_sportsman = NULL;
+    event current_event;
+    for (int i = 0; i < *num_sportsmen; i++) {
+        if (sportsmen_array[i].id == I) {
+            current_sportsman = &sportsmen_array[i];
+            flag = 1;
+            break; 
+        }
+    }
+    // If sportsman with given ID is not found, print message and return
+    if (current_sportsman == NULL) {
+        printf("Sportsman with ID %d not found.\n", I);
+        return 0; // Return 0 indicating failure
+    }
+    if (strcmp(current_sportsman->p2events, "No events registered") == 0) {
+        printf("Sportsman with ID %d has no events.\n", I);
+        return 0; // Return 0 indicating failure
+    }
+    // Iterate over the events of the current sportsman
+    for (int i = 0; i < current_sportsman->Nevents; i++) {
+        current_event = current_sportsman->p2events[i];
+
+        int participated_with_others = 0; // flag that checks if the current sportsman participated with other sportsmen in this event
+
+        // Iterate over other sportsmen to find those who participated in the same event
+        for (int j = 0; j < *num_sportsmen; j++) 
+        {
+            if (sportsmen_array[j].id == I) 
+            {
+                continue; // Skip the current sportsman
+            }
+
+            // Iterate over the events of the other sportsman
+            for (int k = 0; k < sportsmen_array[j].Nevents; k++) 
+            {
+                event other_event = sportsmen_array[j].p2events[k];
+                if (strcmp(current_event.p2title, other_event.p2title) == 0 &&
+                    strcmp(current_event.p2location, other_event.p2location) == 0 &&
+                    current_event.year == other_event.year) 
+                {
+                    // Print the first name and last name of the other sportsman who participated in the same event
+                    printf("Event: %s, Location: %s, Year: %d\n", current_event.p2title, current_event.p2location, current_event.year);
+                    printf("Participant: %s %s\n", sportsmen_array[j].Fname, sportsmen_array[j].Lname);
+                    flag = 1; // Set flag to indicate success
+                    participated_with_others = 1;
+                }
+            }
+        }
+        // If the current sportsman participated with others in this event, print a separator line
+        if (participated_with_others) {
+            printf("--------\n");
+        }
+    }
+    // If flag is 0, no other sportsmen participated in events with the specified sportsman
+    if (flag == 0) 
+    {
+        printf("No other sportsmen participated in events with sportsman ID %d.\n", I);
+    }
+    return flag; // return flag indicating success or failure
+}
+
+void printSortedEvents(const char* C, sportsman* sportsmen_array, int* num_sportsmen) {
+    // flag to check if the club exists
+    int club_exists = 0;
+
+    // running on the sportsmen_array
+    for (int i = 0; i < *num_sportsmen; i++) 
+    {
+        // Check if the current sportsman belongs to the club C
+        if (strcmp(sportsmen_array[i].p2club, C) == 0) 
+        {
+            club_exists = 1; // found a much club
+            event unique_events[MAX_EVENT_NUMBER]; //array of events for this club
+            int num_unique_events = 0; // Number of events for this club
+
+            // running on the events array of the current sportsman
+            for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
+            {
+                // Check if the current event is already in the set of events of this club
+                int event_exists = 0;
+                for (int k = 0; k < num_unique_events; k++) 
+                {
+                    if (strcmp(unique_events[k].p2title, sportsmen_array[i].p2events[j].p2title) == 0 &&
+                        strcmp(unique_events[k].p2location, sportsmen_array[i].p2events[j].p2location) == 0 &&
+                        unique_events[k].year == sportsmen_array[i].p2events[j].year) {
+                        event_exists = 1; 
+                        break;
+                    }
+                }
+                // If the event is not already existst in the array events we add it
+                if (!event_exists) 
+                {
+                    unique_events[num_unique_events] = sportsmen_array[i].p2events[j];
+                    num_unique_events++;
+                }
+            }
+
+            // this part just sort the events by the year. 
+            // I used simple Bubble sort (i know this from high school) to sort the array
+            for (int x = 0; x < num_unique_events - 1; x++) 
+            {
+                for (int y = 0; y < num_unique_events - x - 1; y++) 
+                {
+                    if (unique_events[y].year > unique_events[y + 1].year) //check for each event if he is bigger form the next one
+                    {
+
+                        //if it is bigger we swap the events case we want the event will be order by year (e.g: 2001,2005,2006,2007,2024)
+                        event temp = unique_events[y];
+                        unique_events[y] = unique_events[y + 1];
+                        unique_events[y + 1] = temp;
+                    }
+                }
+            }
+
+            // Print the sorted unique events
+            for (int m = 0; m < num_unique_events; m++) 
+            {
+                printf("Event: %s, Year: %d\n", unique_events[m].p2title, unique_events[m].year);
+            }
+        }
+    }
+
+    // If the club does not exist, print a message to the user
+    if (!club_exists) 
+    {
+        printf("Club '%s' does not exist.\n", C);
+    }
+}
+
+void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_sportsmen) 
+{
+    for (int i = 0; i < *num_sportsmen; i++) 
+    {
+        for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
+        {
+            // Check if the event matches the given name (E) and year (Y)
+            if (strcmp(sportsmen_array[i].p2events[j].p2title, E) == 0 && sportsmen_array[i].p2events[j].year == Y) 
+            {
+                // Free memory allocated for the event's title and location
+                free(sportsmen_array[i].p2events[j].p2title);
+                free(sportsmen_array[i].p2events[j].p2location);
+
+                // Remove the event from the events list
+                for (int k = j; k < sportsmen_array[i].Nevents - 1; k++) 
+                {
+                    sportsmen_array[i].p2events[k] = sportsmen_array[i].p2events[k + 1];
+                }
+                sportsmen_array[i].Nevents--; // Decrement the number of events
+                sportsmen_array[i].p2events = realloc(sportsmen_array[i].p2events, sportsmen_array[i].Nevents * sizeof(event));
+
+                // Adjust index after removal
+                j--;
+            }
+        }
+    }
+}
+
 void main()
 {
     char sportsman_last_name[MAX_NAME_LENGTH];
     char specific_event_name[MAX_NAME_LENGTH];
+    char club_name[MAX_NAME_LENGTH];
+    char E[MAX_NAME_LENGTH];
+    int Y;
     int specific_event_year;
     int num_sportsmen = countLines("SportsmanData.txt"); //number of sportmens - taken from SportsmanData file. 
     sportsman* sportsmen_array = NULL; //pointer to sportsmen array
@@ -827,15 +994,15 @@ void main()
             }
         }
 
-        else if (choice == 4) // Handle other options
+        else if (choice == 3) // Handle other options
         {
             printSportsmen(sportsmen_array, num_sportsmen);
         }
-        else if (choice == 5) // Handle other options
+        else if (choice == 4) // Handle other options
         {
             print_Sportman_participated_events(sportsmen_array, num_sportsmen);
         }
-        else if (choice == 6) 
+        else if (choice == 5) 
         {
             printf("Enter the last name of the sportsman:");
             scanf("%s", sportsman_last_name);
@@ -859,7 +1026,7 @@ void main()
                 printf("Events printed successfully\n");
             }
         }
-        else if (choice == 7) 
+        else if (choice == 6) 
         {
             printf("Enter the specific event name:");
             fgets(specific_event_name, sizeof(specific_event_name), stdin);
@@ -870,13 +1037,42 @@ void main()
             while (getchar() != '\n'); // Clear the input buffer
             printf("The number of sportsman who participated in %s in %d is: %d\n ", specific_event_name, specific_event_year, countEvent(specific_event_name, specific_event_year, sportsmen_array, &num_sportsmen));
         }
-        else if (choice == 8) // Handle other options
+        else if (choice == 7) // Handle other options
         {
             bestClub(sportsmen_array, &num_sportsmen);
         }
+        else if (choice == 8) // Handle other options
+        {
+            int I;
+            printf("Enter the sportsman ID for whom you want check: ");
+            scanf("%d", &I);
+            printf("here is the list of sportsman that particpated in the same event with this sportman:\n");
+            CheckSameEvent(I, sportsmen_array, &num_sportsmen);
+        }
+        else if (choice == 9) // Handle other options
+        {
+            printf("Enter the club name:");
+            fgets(club_name, sizeof(club_name), stdin);
+            capitalize_each_First_Letter(club_name);
+            club_name[strcspn(club_name, "\n")] = '\0'; // Remove the newline character
+            printSortedEvents(club_name, sportsmen_array, &num_sportsmen);
+        }
+        else if (choice == 10) // Handle other options
+        {
+            printf("Enter the event name that you want to delete:");
+            fgets(E, sizeof(E), stdin);
+            capitalize_each_First_Letter(E);
+            E[strcspn(E, "\n")] = '\0'; // Remove the newline character
+            printf("Enter the event year that you want to delete:");
+            scanf("%d", &Y);
+            while (getchar() != '\n'); // Clear the input buffer
+            deleteEvent(E, Y, sportsmen_array, &num_sportsmen);
+            Write_array_to_Event_Data("EventData.txt", sportsmen_array, num_sportsmen); //update the file
+
+        }
         else // Invalid choice
         {
-            printf("Invalid choice. Please enter a number between 0 and 8.\n");
+            printf("Invalid choice. Please enter a number between 0 and 10.\n");
         }
 
     }
