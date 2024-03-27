@@ -14,4 +14,5 @@ format:sportsman_id;first_name;last_name;club_name;gender
 18;Gidi;Cohen;Maccabi Netanya;0
 19;Inna;Gefen;Maccabi Hod Hasharon;1
 23;Iotam;Evron;Hapoel Tel Aviv;0
-99;niv;alex;maccabi kfar yona;1
+99;Niv;Alex;maccabi netanya;1
+88;Daniel;Bro;Afula Fc;1

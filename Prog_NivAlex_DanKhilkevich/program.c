@@ -239,6 +239,24 @@ int check_if_sportsman_already_exists(sportsman* sportsmen_array[], int new_spor
     return 1; // The sportsman does not exist in the array
 }
 
+
+void capitalize_each_First_Letter(char* str) {
+    int i;
+
+    // Capitalize first letter of the string
+    if (str[0] != '\0') {
+        str[0] = toupper(str[0]);
+    }
+
+    // Capitalize first letter of each word
+    for (i = 1; str[i] != '\0'; i++) {
+        if (isspace(str[i - 1]) && isalpha(str[i])) {
+            str[i] = toupper(str[i]);
+        }
+    }
+}
+
+
 //addSportman function gets pointer to sportmen_arr and pointer to sportsmen_array_size
 // the function add new sportmen to the array and change his size. 
 // note: sportsmen_array is a dynamic array and sportsmen_array_size is a dynamic size so we worked with pointers.  
@@ -265,14 +283,16 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
 
     // insert the details of the new sportsman
     printf("Enter the new sportsman First name: ");
-    scanf("%s", (*sportsmen_array)[*sportsmen_array_size - 1].Fname);
+    scanf("%s",(*sportsmen_array)[*sportsmen_array_size - 1].Fname);
+    capitalize_each_First_Letter((*sportsmen_array)[*sportsmen_array_size - 1].Fname); // capitalize first letter of each word
     printf("Enter the new sportsman Last name: ");
     scanf("%s", (*sportsmen_array)[*sportsmen_array_size - 1].Lname);
+    capitalize_each_First_Letter((*sportsmen_array)[*sportsmen_array_size - 1].Lname); // capitalize first letter of each word
     printf("Enter the new sportsman Club name: ");
     getchar();
     fgets(club_name, sizeof(club_name), stdin);
     club_name[strcspn(club_name, "\n")] = '\0'; // Remove trailing newline character
-
+    capitalize_each_First_Letter(club_name);
     // malloc memory for the club name and copy the string instead of address. 
     (*sportsmen_array)[*sportsmen_array_size - 1].p2club = malloc((strlen(club_name) + 1) * sizeof(char));
     if ((*sportsmen_array)[*sportsmen_array_size - 1].p2club == NULL) {
@@ -371,10 +391,12 @@ int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_siz
     clearInputBuffer();
     printf("Enter event name: ");
     fgets(event_name, sizeof(event_name), stdin);
+    capitalize_each_First_Letter(event_name);
     event_name[strcspn(event_name, "\n")] = '\0'; // Remove newline character
 
     printf("\nEnter event location: ");
     fgets(location, sizeof(location), stdin);
+    capitalize_each_First_Letter(location);
     location[strcspn(location, "\n")] = '\0'; // Remove newline character
 
     printf("\nEnter event year: ");
@@ -642,7 +664,6 @@ int countEvent(const char E[], int Y, sportsman* sportsmen_array, int* num_sport
 }
 
 
-
 char* getSportClubName(char* p2club) {
     // Find the length of the club name
     size_t length = strlen(p2club);
@@ -727,6 +748,39 @@ void bestClub(sportsman* sportsmen_array, int* num_sportsmen)
     printf("The club which has the biggest number of sportsmen who participated in the events is %s and the number of events is: %d\n", best_club_name, max_events);
 }
 
+void correct_formatLastName(char* lastName) {
+    int i;
+
+    // Convert all letters to lowercase
+    for (i = 0; lastName[i] != '\0'; i++) {
+        lastName[i] = tolower(lastName[i]);
+    }
+
+    // Capitalize the first letter
+    if (i > 0) {
+        lastName[0] = toupper(lastName[0]);
+    }
+}
+
+void capitalizeFirstLetter(char* str) {
+    int i;
+
+    // Capitalize first letter of the string
+    if (strlen(str) > 0) {
+        str[0] = toupper(str[0]);
+    }
+
+    // Capitalize first letter of each word
+    for (i = 1; str[i] != '\0'; i++) {
+        if (isspace(str[i - 1]) && isalpha(str[i])) {
+            str[i] = toupper(str[i]);
+        }
+        else {
+            str[i] = tolower(str[i]);
+        }
+    }
+}
+
 void main()
 {
     char sportsman_last_name[MAX_NAME_LENGTH];
@@ -785,7 +839,14 @@ void main()
         {
             printf("Enter the last name of the sportsman:");
             scanf("%s", sportsman_last_name);
+            if (atoi(sportsman_last_name) != 0) // if the user enter int
+            {
+                printf("Invalid input: Last name cannot be an integer.\n");
+                return 1; // Exit the program due to invalid input
+            }
+            correct_formatLastName(sportsman_last_name); //if the user enter 'gefen' instead 'Gefen' 
             while (getchar() != '\n'); // Clear the input buffer
+
             int result = printEvents(sportsman_last_name, sportsmen_array, &num_sportsmen);
             if (result == 0) 
             {
@@ -798,10 +859,11 @@ void main()
                 printf("Events printed successfully\n");
             }
         }
-        else if (choice == 7) // Handle other options
+        else if (choice == 7) 
         {
             printf("Enter the specific event name:");
             fgets(specific_event_name, sizeof(specific_event_name), stdin);
+            capitalizeFirstLetter(specific_event_name); //If the user enter WoRlD CUP instead of World Cup
             specific_event_name[strcspn(specific_event_name, "\n")] = '\0'; // Remove the newline character
             printf("Enter the specific event year:");
             scanf("%d", &specific_event_year);
