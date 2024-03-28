@@ -16,3 +16,5 @@ format:sportsman_id;first_name;last_name;club_name;gender
 23;Iotam;Evron;Hapoel Tel Aviv;0
 99;Niv;Alex;maccabi netanya;1
 88;Daniel;Bro;Afula Fc;1
+84;Dd;Aa;Fc Bieter;5
+94;Aa;Bb;Cc;1
