@@ -1058,19 +1058,19 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
     int choice = 0; 
     int selected_id;
     // display all the menu options
-    printf("Choose an option:\n");
-    printf("(0) Exit\n");
+    printf("Please choose an option:\n");
+    printf("(0) Exit the program\n");
     printf("(1) Add a new sportsman\n");
     printf("(2) Add a new event\n");
     printf("(3) Print sportsman array\n");
-    printf("(4) Print sportsman participated events\n");
+    printf("(4) Print for each sportsman his participated events\n");
     printf("(5) Print specific sportsman events\n");
     printf("(6) Print the number of sportsmen that participated in a specific event\n");
     printf("(7) Print the best club\n");
     printf("(8) Check the same event\n");
     printf("(9) Print sorted events\n");
     printf("(10) Delete an event\n");
-    printf("(11) Activate new club\n");
+    printf("(11) Activate new club function\n");
     printf("Enter your choice:");
     scanf("%d", &choice);
     // clear input buffer
@@ -1219,6 +1219,7 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
     return choice; // return the user choice
 }
 
+//free the sportsmen_array and the event_array for each sportmen
 void freeSportsmenArray(sportsman* sportsmen_array, int *num_sportsmen) 
 {
     //running on sportsmen array
@@ -1240,9 +1241,10 @@ void main()
     sportsman* sportsmen_array = NULL; //pointer to sportsmen array
     FromFile2Sportsman("SportsmanData.txt", &sportsmen_array, num_sportsmen); //get the sportsman array 
     FromFile2Events("EventData.txt", sportsmen_array, num_sportsmen); //insert array of events for each sportsman 
+    printf("----WELCOME TO OUR SPORTSMAN MANAGEMENT SYSTEM----\n");
     while (1) 
     {
-    int choice = printMenu(sportsmen_array, num_sportsmen);
+    int choice = printMenu(sportsmen_array, num_sportsmen); //call to printMenu
     } 
     freeSportsmenArray(sportsmen_array, &num_sportsmen);
 }
