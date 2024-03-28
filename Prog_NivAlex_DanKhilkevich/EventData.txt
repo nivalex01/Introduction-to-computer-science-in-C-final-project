@@ -49,3 +49,5 @@
 105,Pigua,Netanya,2002
 105,Running Race,Netanya,2024
 105,Running ,Kfar Yona,2005
+105,Jumping ,Bnei Bark,2025
+118,Basketball Hood,Net,2025
