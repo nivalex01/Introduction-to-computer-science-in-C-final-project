@@ -255,6 +255,19 @@ void capitalize_each_First_Letter(char* str) {
     }
 }
 
+
+int is_number(const char* str) {
+    // Check if each character is a digit
+    for (int i = 0; str[i] != '\0'; i++) {
+        // Check if the character is not between '0' and '9'
+        if (str[i] < '0' || str[i] > '9') 
+        {
+            return 1; //the str is not a number;
+        }
+    }
+    return 0; //the str is number 
+}
+
 //addSportman function gets pointer to sportmen_arr and pointer to sportsmen_array_size
 // the function add new sportmen to the array and change his size. 
 // note: sportsmen_array is a dynamic array and sportsmen_array_size is a dynamic size so we worked with pointers.  
@@ -264,8 +277,20 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
     char club_name[MAX_NAME_LENGTH];
 
     printf("Please enter the new sportsman details:\n");
-    printf("Enter the new sportsman ID: ");
-    scanf("%d", &new_sportman_id);
+    while (1) 
+    {
+        printf("Enter the new sportsman ID: ");
+        if (scanf("%d", &new_sportman_id) != 1) 
+        {
+            printf("Error: Invalid input for ID. Please enter a number.\n");
+            while (getchar() != '\n'); // Clear input buffer
+        }
+        else 
+        {
+            break; // Exit the loop if a valid ID is provided
+        }
+    }
+
     if (check_if_sportsman_already_exists(sportsmen_array, new_sportman_id, *sportsmen_array_size) == 0) // Check if the sportsman already exists
         return 0; // The sportsman already exists in the array, return 0
 
@@ -278,13 +303,46 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
         return 0;
     }
     *sportsmen_array = temp;
-
+    char first_name[MAX_NAME_LENGTH];
+    char last_name[MAX_NAME_LENGTH];
+    //char club_name[MAX_NAME_LENGTH];
     // insert the details of the new sportsman
-    printf("Enter the new sportsman First name: ");
-    scanf("%s",(*sportsmen_array)[*sportsmen_array_size - 1].Fname);
+    while (1) 
+    {
+        printf("Enter the new sportsman First name: ");
+        scanf("%s", first_name);
+
+        if (is_number(first_name)==0) 
+        {
+            printf("You entered a number instead of a name. Please try again.\n");
+        }
+        else 
+        {
+            // Copy the first name to the Fname field of the last sportsman in the array
+            strcpy((*sportsmen_array)[*sportsmen_array_size - 1].Fname, first_name);
+            break;
+        }
+    }
     capitalize_each_First_Letter((*sportsmen_array)[*sportsmen_array_size - 1].Fname); // capitalize first letter of each word
-    printf("Enter the new sportsman Last name: ");
-    scanf("%s", (*sportsmen_array)[*sportsmen_array_size - 1].Lname);
+
+
+    while (1)
+    {
+        printf("Enter the new sportsman Last name: ");
+        scanf("%s", last_name);
+
+        if (is_number(last_name) == 0)
+        {
+            printf("You entered a number instead of a name. Please try again.\n");
+        }
+        else
+        {
+            // Copy the first name to the Fname field of the last sportsman in the array
+            strcpy((*sportsmen_array)[*sportsmen_array_size - 1].Lname, last_name);
+            break;
+        }
+    }
+
     capitalize_each_First_Letter((*sportsmen_array)[*sportsmen_array_size - 1].Lname); // capitalize first letter of each word
     printf("Enter the new sportsman Club name: ");
     getchar();
@@ -293,7 +351,8 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
     capitalize_each_First_Letter(club_name);
     // malloc memory for the club name and copy the string instead of address. 
     (*sportsmen_array)[*sportsmen_array_size - 1].p2club = malloc((strlen(club_name) + 1) * sizeof(char));
-    if ((*sportsmen_array)[*sportsmen_array_size - 1].p2club == NULL) {
+    if ((*sportsmen_array)[*sportsmen_array_size - 1].p2club == NULL) 
+    {
         printf("Error: Memory allocation failed.\n");
         return 0;
     }
@@ -302,16 +361,17 @@ int addSportsman(sportsman* sportsmen_array[], int* sportsmen_array_size)
     do 
     {
         printf("Enter the new sportsman Gender (1 for male or 0 for female): ");
-        if (scanf("%d", &gender_input) != 1)
+        if (scanf("%d", &gender_input) != 1) //check if the input is not a number (the input is string)
         {
             printf("Error: Invalid input for gender.\n"); //the user entered string instead of a number
             while (getchar() != '\n'); // Clear input buffer
         }
+        //the user enterd number, we need to check if the number is only 1 or 0
         else if (gender_input != 0 && gender_input != 1)
         {
-            printf("Error: Gender should be 0 (female) or 1 (male).\n");
+            printf("Error: Gender should be 0 (female) or 1 (male).\n"); //the number is not 1 or 0
         }
-        else 
+        else //valid input
         {
             (*sportsmen_array)[*sportsmen_array_size - 1].gen = gender_input;
             break; // good input,  now we can exit the loop
@@ -351,6 +411,8 @@ sportsman* find_Sportsman_ByID(int id, sportsman* sportsmen_array[], int* sports
 } // Function to find a sportsman by ID
 
 //freeEventsMemory function release memory for each event in the event arrary
+
+//////// !!!!!!!!!!need to check if i use it!!!!!!!!!!!!!! /////////
 void freeEventsMemory(sportsman* sportsmen_array, int sportsmen_array_size) 
 {
     for (int i = 0; i < sportsmen_array_size; i++) {
@@ -396,26 +458,78 @@ int isEventExist(event* events_array, int num_events, const char* event_name, co
     return 0; // event does not exist
 }
 
+
+int does_string_has_number(const char* str) {
+    for (int i = 0; str[i] != '\0'; i++) 
+    {
+        if (str[i] > 48 && str[i] < 57) 
+        {
+            return 1; // Number found
+        }
+    }
+    return 0; // No number found
+}
 //addEvent function gets sportman_array, sportman_id and sportman_array size
 //the function add new event to this sportsman
 int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_size) {
-    char event_name[30], location[30];
+    char event_name[MAX_NAME_LENGTH], location[MAX_NAME_LENGTH];
     int year;
 
     // Prompt user for event details
     clearInputBuffer();
-    printf("Enter event name: ");
-    fgets(event_name, sizeof(event_name), stdin);
+    while (1) {
+        printf("Enter the new event name: ");
+        fgets(event_name, sizeof(event_name), stdin);
+
+        // Remove newline character if present
+        if (event_name[strlen(event_name) - 1] == '\n') {
+            event_name[strlen(event_name) - 1] = '\0';
+        }
+
+        if (does_string_has_number(event_name) == 1) {
+            printf("You entered a number instead of a name. Please try again.\n");
+        }
+        else {
+            break;
+        }
+    }
     capitalize_each_First_Letter(event_name);
     event_name[strcspn(event_name, "\n")] = '\0'; // Remove newline character
 
-    printf("\nEnter event location: ");
-    fgets(location, sizeof(location), stdin);
+    while (1) 
+    {
+        printf("Enter the new event location: ");
+        fgets(location, sizeof(location), stdin);
+
+        // Remove newline character if present
+        if (location[strlen(location) - 1] == '\n') {
+            event_name[strlen(location) - 1] = '\0';
+        }
+
+        if (does_string_has_number(location) == 1) {
+            printf("You entered a number instead of a name. Please try again.\n");
+        }
+        else {
+            break;
+        }
+    }
     capitalize_each_First_Letter(location);
     location[strcspn(location, "\n")] = '\0'; // Remove newline character
 
-    printf("\nEnter event year: ");
-    scanf("%d", &year);
+
+    while (1)
+    {
+        printf("enter the event year:");
+        if (scanf("%d", &year) != 1)
+        {
+            printf("Error: Invalid input for event year. Please enter a number.\n");
+            while (getchar() != '\n'); // Clear input buffer
+        }
+        else
+        {
+            break; // Exit the loop if a valid ID is provided
+        }
+    }
     clearInputBuffer(); // Clear input buffer to remove any leftover newline characters
 
     // Find the index of the sportsman in the sportsmen array
@@ -435,27 +549,27 @@ int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_siz
 
     // Check if the event already exists
     if (isEventExist(sportsmen_array[sportsman_index].p2events, sportsmen_array[sportsman_index].Nevents, event_name, location, year) == 1) {
-        printf("Event already exists!!!\n");
+        printf("Event already exists!!!\n\n");
         return 0; // Event already exists
     }
 
     // Reallocate memory for the events array of the sportsman
     sportsmen_array[sportsman_index].p2events = realloc(sportsmen_array[sportsman_index].p2events, (sportsmen_array[sportsman_index].Nevents + 1) * sizeof(event));
     if (sportsmen_array[sportsman_index].p2events == NULL) {
-        printf("Error: Memory allocation failed.\n");
+        printf("Error: Memory allocation failed.\n\n");
         return 0; // Failed to allocate memory
     }
 
     // Allocate memory for the new event details
     sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title = malloc((strlen(event_name) + 1) * sizeof(char));
     if (sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title == NULL) {
-        printf("Error: Memory allocation failed.\n");
+        printf("Error: Memory allocation failed.\n\n");
         return 0; // Failed to allocate memory
     }
 
     sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2location = malloc((strlen(location) + 1) * sizeof(char));
     if (sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2location == NULL) {
-        printf("Error: Memory allocation failed.\n");
+        printf("Error: Memory allocation failed.\n\n");
         free(sportsmen_array[sportsman_index].p2events[sportsmen_array[sportsman_index].Nevents].p2title);
         return 0; // Failed to allocate memory
     }
@@ -516,7 +630,7 @@ void Write_array_to_Sportsman_data(const char* filename, sportsman* sportsmen_ar
         fprintf(file_dest, "%d;%s;%s;%s;%d", sportsmen_array[i].id, sportsmen_array[i].Fname,
             sportsmen_array[i].Lname, sportsmen_array[i].p2club,
             sportsmen_array[i].gen);
-        if (i != num_sportsmen - 1) //to avoid blank line in the end of the file 
+        if (i != num_sportsmen - 1) //to avoid blank line in the end of the file. we want to write the last one without new line
         {
             fprintf(file_dest, "\n");
         }
@@ -1027,9 +1141,20 @@ void main()
         }
         else if (choice == 2) // Add new event
         {
-            printf("Enter the sportsman ID for whom you want to add an event: ");
             int selected_id;
-            scanf("%d", &selected_id);
+            while (1)
+            {
+                printf("Enter the sportsman ID for whom you want to add an event: ");
+                if (scanf("%d", &selected_id) != 1)
+                {
+                    printf("Error: Invalid input for ID. Please enter a number.\n");
+                    while (getchar() != '\n'); // Clear input buffer
+                }
+                else
+                {
+                    break; // Exit the loop if a valid ID is provided
+                }
+            }
             if (addEvent(sportsmen_array,selected_id,&num_sportsmen) == 1)
             {
                 printf("Event added successfully.\n");

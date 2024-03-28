@@ -46,3 +46,6 @@
 88,Run Race,Monash,2023
 88,Run Race,Monash,2025
 88,Run Race,Monash,2028
+105,Pigua,Netanya,2002
+105,Running Race,Netanya,2024
+105,Running ,Kfar Yona,2005
