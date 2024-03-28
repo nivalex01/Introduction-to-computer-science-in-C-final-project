@@ -42,12 +42,4 @@
 19,World Cup,France,2010
 19,World Cup,Spain,2014
 23,World Cup,USA,2006
-99,Jump Hi,Bat Yam,2025
-88,Run Race,Monash,2023
-88,Run Race,Monash,2025
-88,Run Race,Monash,2028
-105,Pigua,Netanya,2002
-105,Running Race,Netanya,2024
-105,Running ,Kfar Yona,2005
-105,Jumping ,Bnei Bark,2025
-118,Basketball Hood,Net,2025
+194,Swim Race,Ramon,2005

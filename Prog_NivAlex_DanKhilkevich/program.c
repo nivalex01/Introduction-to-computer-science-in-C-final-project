@@ -34,9 +34,9 @@ void clearInputBuffer() {
 
 //printSportmen function gets array of sportsmen and number of sportsmen
 // the function prints the details(id,first name,last name, club, gender, Nevents, P2events) for each sportsmen
-void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
+void printSportsmen(sportsman* sportsmen_array, int *num_sportsmen)
 {
-    for (int i = 0; i < num_sportsmen; ++i) {
+    for (int i = 0; i < *num_sportsmen; ++i) {
         printf("Sportsman ID %d:\n", sportsmen_array[i].id);
         printf("First Name: %s\n", sportsmen_array[i].Fname);
         printf("Last Name: %s\n", sportsmen_array[i].Lname);
@@ -69,9 +69,9 @@ void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
 
 //print_Sportman_participated_events gets array of sportsmen and number of sportsmen
 // the function prints for each sports men the events that he is participated. 
-void print_Sportman_participated_events(sportsman* sportsmen_array, int num_sportsmen) 
+void print_Sportman_participated_events(sportsman* sportsmen_array, int *num_sportsmen) 
 {
-    for (int sportman_index = 0; sportman_index < num_sportsmen; sportman_index++) {
+    for (int sportman_index = 0; sportman_index < *(num_sportsmen); sportman_index++) {
         printf("%s %s events:\n", sportsmen_array[sportman_index].Fname, sportsmen_array[sportman_index].Lname);
 
         // Check if the sportsman has any events
@@ -1110,10 +1110,10 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
         }
         break;
     case 3:
-        printSportsmen(sportsmen_array, num_sportsmen);
+        printSportsmen(sportsmen_array, &num_sportsmen);
         break;
     case 4:
-        print_Sportman_participated_events(sportsmen_array, num_sportsmen);
+        print_Sportman_participated_events(sportsmen_array, &num_sportsmen);
         break;
     case 5: {
         printf("Enter the last name of the sportsman:");
@@ -1219,6 +1219,21 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
     return choice; // return the user choice
 }
 
+void freeSportsmenArray(sportsman* sportsmen_array, int *num_sportsmen) 
+{
+    //running on sportsmen array
+    for (int i = 0; i < *(num_sportsmen); i++) 
+    {
+        for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
+        {
+            free(sportsmen_array[i].p2events[j].p2title); //free the event titile (cause its dynamic title)
+            free(sportsmen_array[i].p2events[j].p2location); //free the event location (cause its dynamic location)
+        }
+        free(sportsmen_array[i].p2events); //free all the events array for each sports man
+    }
+    free(sportsmen_array); //after that free the array of sports man. 
+}
+
 void main()
 {
     int num_sportsmen = countLines("SportsmanData.txt"); //number of sportmens - taken from SportsmanData file. 
@@ -1228,17 +1243,6 @@ void main()
     while (1) 
     {
     int choice = printMenu(sportsmen_array, num_sportsmen);
-    }
-    
-    // Free allocated memory - At the end of the program!!
-    for (int i = 0; i < num_sportsmen; i++)
-    {
-        for (int j = 0; j < sportsmen_array[i].Nevents; j++)
-        {
-            free(sportsmen_array[i].p2events[j].p2title);
-            free(sportsmen_array[i].p2events[j].p2location);
-        }
-        free(sportsmen_array[i].p2events);
-    }
-    free(sportsmen_array);
+    } 
+    freeSportsmenArray(sportsmen_array, &num_sportsmen);
 }

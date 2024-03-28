@@ -17,4 +17,4 @@ format:sportsman_id;first_name;last_name;club_name;gender
 99;Niv;Alex;maccabi netanya;1
 88;Daniel;Bro;Afula Fc;1
 105;Dan;King;Afula Nuggets;1
-118;Orit;Davidovic;Fc Electra;0
+194;Shahr;David;Mitzpe;1
