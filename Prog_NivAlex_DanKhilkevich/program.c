@@ -26,6 +26,12 @@ typedef struct {
     int Nevents; //number of participated events
 }sportsman;
 
+//clearInputBuffer clear the buffers for each word (spaces)
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 //printSportmen function gets array of sportsmen and number of sportsmen
 // the function prints the details(id,first name,last name, club, gender, Nevents, P2events) for each sportsmen
 void printSportsmen(sportsman* sportsmen_array, int num_sportsmen)
@@ -410,25 +416,6 @@ sportsman* find_Sportsman_ByID(int id, sportsman* sportsmen_array[], int* sports
     return NULL; // Sportsman with the given ID not found
 } // Function to find a sportsman by ID
 
-//freeEventsMemory function release memory for each event in the event arrary
-
-//////// !!!!!!!!!!need to check if i use it!!!!!!!!!!!!!! /////////
-void freeEventsMemory(sportsman* sportsmen_array, int sportsmen_array_size) 
-{
-    for (int i = 0; i < sportsmen_array_size; i++) {
-        for (int j = 0; j < sportsmen_array[i].Nevents; j++) {
-            free(sportsmen_array[i].p2events[j].p2title);
-        }
-        free(sportsmen_array[i].p2events);
-    }
-}
-
-//clearInputBuffer clear the buffers for each word (spaces)
-void clearInputBuffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-}
-
 //isEventExist function get and array of events, number of events, event name,location and year
 //the function return 1 if the event is already exists on the events list or 0 if its not already exists
 int isEventExist(event* events_array, int num_events, const char* event_name, const char* location, int year)
@@ -436,7 +423,6 @@ int isEventExist(event* events_array, int num_events, const char* event_name, co
     char current_event_name[50];
     char current_event_location[50];
     int current_event_year;
-
     for (int i = 0; i < num_events; i++)
     {
         if (events_array[i].p2title == NULL || events_array[i].p2location == NULL)
@@ -457,7 +443,6 @@ int isEventExist(event* events_array, int num_events, const char* event_name, co
     }
     return 0; // event does not exist
 }
-
 
 int does_string_has_number(const char* str) {
     for (int i = 0; str[i] != '\0'; i++) 
@@ -535,7 +520,7 @@ int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_siz
         }
     }
 
-    // If the sportsman is not found, return 0 with an error
+    // if the sportsman is not found, return 0 with an error
     if (sportsman_index == -1) {
         printf("Error: Sportsman with ID %d not found.\n", sportsman_id);
         return 0;
@@ -636,9 +621,8 @@ sportsman* getSportsmanByID(int sportsman_id, sportsman* sportsmen_array, int nu
     return NULL;
 }
 
-
 // function to remove leading and trailing whitespace characters from a string
-void trim(char* str) 
+void clean_char_from_spaces(char* str) 
 {
     int start = 0, end = strlen(str) - 1;
     while (isspace(str[start])) {
@@ -654,8 +638,8 @@ void trim(char* str)
     }
 }
 
-// help function to trim leading and trailing spaces from a string this is for countEvent function
-void trim1(char* str) {
+// help function to clean leading and trailing spaces from a string. this is for countEvent function
+void clean_event_name_buffer(char* str) {
     // Trim leading spaces
     while (isspace((unsigned char)*str)) {
         str++;
@@ -680,7 +664,7 @@ void trim1(char* str) {
 //the function return struct of sportsman with this last name
 sportsman* get_sportsman_by_lastname(char sportsman_last_name[], sportsman* sportsmen_array, int* num_sportsmen)
 {
-    trim(sportsman_last_name);
+    clean_char_from_spaces(sportsman_last_name);
     capitalize_each_First_Letter(sportsman_last_name);
     for (int i = 0; i < *(num_sportsmen); i++) 
     {
@@ -737,11 +721,9 @@ int printEvents(char sportsman_last_name[], sportsman* sportsmen_array, int* num
 //the function counts the number of sportsmen who participated in event E in the year Y
 int countEvent(const char E[], int Y, sportsman* sportsmen_array, int* num_sportsmen) {
     int count = 0;
-
-    // trim event name
-    char trimmed_event_name[50];
-    strcpy(trimmed_event_name, E);
-    trim1(trimmed_event_name);
+    char event_name[MAX_NAME_LENGTH];
+    strcpy(event_name, E);
+    clean_event_name_buffer(event_name);
 
     // Iterate over each sportsman in the array
     for (int i = 0; i < *(num_sportsmen); i++) {
@@ -750,51 +732,44 @@ int countEvent(const char E[], int Y, sportsman* sportsmen_array, int* num_sport
         // Check if the current sportsman has participated in the event in the specified year
         for (int j = 0; j < current_sportsman.Nevents; j++) {
             // Trim event title from the current sportsman's events
-            char trimmed_event_title[50];
-            strcpy(trimmed_event_title, current_sportsman.p2events[j].p2title);
-            trim1(trimmed_event_title);
+            char event_title[MAX_NAME_LENGTH];
+            strcpy(event_title, current_sportsman.p2events[j].p2title);
+            clean_event_name_buffer(event_title);
 
-            if (strcmp(trimmed_event_title, trimmed_event_name) == 0 && current_sportsman.p2events[j].year == Y) {
+            if (strcmp(event_title, event_name) == 0 && current_sportsman.p2events[j].year == Y) {
                 count++;
                 break;  // No need to continue checking events for this specific sportsman
             }
         }
     }
-
     return count;
 }
 
 //getSportClubName gets pointer to clube name (p2club) and return the name of the club
-char* getSportClubName(char* p2club) {
-    // Find the length of the club name
-    size_t length = strlen(p2club);
+char* getSportClubName(char* p2club) 
+{
+    size_t length = strlen(p2club); // find the length of the club name
 
-    // Allocate memory for the club name without the first and last spaces
-    char* club_name = (char*)malloc(length + 1); // Plus one for null terminator
-    if (club_name == NULL) {
+    // allocate memory for the club name without the first and last spaces
+    char* club_name = (char*)malloc(length + 1);
+    if (club_name == NULL) 
+    {
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
     }
-
-    // Find the index of the first non-space character
-    size_t start = 0;
+    size_t start = 0; //find the index of the first non-space character
     while (p2club[start] == ' ') {
         start++;
     }
-
-    // Find the index of the last non-space character
-    size_t end = length - 1;
+    size_t end = length - 1; //find the index of the last non-space character
     while (end > 0 && p2club[end] == ' ') {
         end--;
     }
-
-    // Copy the club name without the leading and trailing spaces
-    size_t j = 0;
+    size_t j = 0; //copy the club name without the first and last spaces
     for (size_t i = start; i <= end; i++) {
         club_name[j++] = p2club[i];
     }
-    club_name[j] = '\0'; // Null-terminate the string
-
+    club_name[j] = '\0'; // add \0 that indicate end of string
     return club_name;
 }
 
@@ -1082,7 +1057,7 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
 {
     int choice = 0; 
     int selected_id;
-    // Display the menu options
+    // display all the menu options
     printf("Choose an option:\n");
     printf("(0) Exit\n");
     printf("(1) Add a new sportsman\n");
@@ -1096,10 +1071,9 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
     printf("(9) Print sorted events\n");
     printf("(10) Delete an event\n");
     printf("(11) Activate new club\n");
-    // Prompt the user to enter their choice
     printf("Enter your choice:");
     scanf("%d", &choice);
-    // Clear input buffer
+    // clear input buffer
     while (getchar() != '\n');
     switch (choice) 
     {
