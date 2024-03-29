@@ -1241,7 +1241,7 @@ void main()
     sportsman* sportsmen_array = NULL; //pointer to sportsmen array
     FromFile2Sportsman("SportsmanData.txt", &sportsmen_array, num_sportsmen); //get the sportsman array 
     FromFile2Events("EventData.txt", sportsmen_array, num_sportsmen); //insert array of events for each sportsman 
-    printf("----WELCOME TO OUR SPORTSMAN MANAGEMENT SYSTEM----\n");
+    printf("-----WELCOME TO OUR SPORTSMAN MANAGEMENT SYSTEM-----\n");
     while (1) 
     {
     int choice = printMenu(sportsmen_array, num_sportsmen); //call to printMenu
