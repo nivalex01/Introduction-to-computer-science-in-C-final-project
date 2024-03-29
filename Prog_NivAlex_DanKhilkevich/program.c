@@ -26,7 +26,7 @@ typedef struct {
     int Nevents; //number of participated events
 }sportsman;
 
-//clearInputBuffer clear the buffers for each word (spaces)
+//clearInputBuffer function clear the buffers for each word (spaces)
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -41,7 +41,7 @@ void printSportsmen(sportsman* sportsmen_array, int *num_sportsmen)
         printf("First Name: %s\n", sportsmen_array[i].Fname);
         printf("Last Name: %s\n", sportsmen_array[i].Lname);
 
-        // Check if p2club is not NULL before printing
+        // check if p2club is not NULL before printing
         if (sportsmen_array[i].p2club != NULL) {
             printf("Club: %s\n", sportsmen_array[i].p2club);
         }
@@ -53,7 +53,7 @@ void printSportsmen(sportsman* sportsmen_array, int *num_sportsmen)
         printf("Number of Events: %d\n", sportsmen_array[i].Nevents);
         printf("Events:\n");
 
-        // Check if p2events is not NULL before accessing
+        // check if p2events is not NULL before accessing
         if (sportsmen_array[i].p2events != NULL) {
             for (int j = 0; j < sportsmen_array[i].Nevents; ++j) {
                 printf("- Event %d: %s, %s, %d\n", j + 1, sportsmen_array[i].p2events[j].p2title,
@@ -467,7 +467,7 @@ int isString(const char* str) {
 
 //addEvent function gets sportman_array, sportman_id and sportman_array size
 //the function add new event to this sportsman
-int addEvent(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_size) 
+int addEvent_to_club_events(sportsman* sportsmen_array, int sportsman_id, int* sportmen_arr_size) 
 {
     char event_name[MAX_NAME_LENGTH], location[MAX_NAME_LENGTH];
     int year;
@@ -846,7 +846,7 @@ void correct_formatLastName(char* lastName) {
     }
 }
 
-//help function
+//help function to capitalize the FirstLetter of given word
 void capitalizeFirstLetter(char* str) {
     int i;
 
@@ -1021,30 +1021,53 @@ void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_spor
     }
 }
 
-void NewClub(const char* C1, const char* C2, sportsman* sportsmen_array, int* num_sportsmen) 
-{
+int is_event_exists_in_club_events(event* events, int numEvents, event* event) {
+    for (int i = 0; i < numEvents; i++) 
+    {
+        if (strcmp(events[i].p2title, event->p2title) == 0 &&
+            strcmp(events[i].p2location, event->p2location) == 0 &&
+            events[i].year == event->year) {
+            return 1; // Event already exists
+        }
+    }
+    return 0; // Event does not exist
+}
+
+//NewClub function gets club1 name, club2 name, sportsmen_array and a pointer number of sportsman
+//the function create file new file "Club.txt" which contains the events of sportsman from club1 and club2
+void NewClub(const char* C1, const char* C2, sportsman* sportsmen_array, int* num_sportsmen) {
     FILE* fp = fopen("Club.txt", "w"); //create new file with the name "Club.txt"
     if (fp == NULL) 
     {
         printf("Error opening file.\n");
         return;
     }
+    event eventsC1[MAX_EVENT_NUMBER]; 
+    int numEventsC1 = 0;
+    event eventsC2[MAX_EVENT_NUMBER];
+    int numEventsC2 = 0;
 
     // running on sportsmen_array
     for (int i = 0; i < *num_sportsmen; i++) 
     {
-        if (strcmp(sportsmen_array[i].p2club, C1) == 0)  //events the belong to sportsmen's in C1
+        if (strcmp(sportsmen_array[i].p2club, C1) == 0) 
         {
             for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
             {
-                fprintf(fp, "%s,%s,%d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
+                if (!is_event_exists_in_club_events(eventsC1, numEventsC1, &sportsmen_array[i].p2events[j])) 
+                {
+                    fprintf(fp, "%s,%s,%d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
+                }
             }
         }
-        else if (strcmp(sportsmen_array[i].p2club, C2) == 0) //events the belong to sportsmen's in C1 
+        else if (strcmp(sportsmen_array[i].p2club, C2) == 0) 
         {
             for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
             {
-                fprintf(fp, "%s,%s,%d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
+                if (!is_event_exists_in_club_events(eventsC2, numEventsC2, &sportsmen_array[i].p2events[j])) 
+                {
+                    fprintf(fp, "%s,%s,%d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
+                }
             }
         }
     }
@@ -1058,7 +1081,7 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
     int choice = 0; 
     int selected_id;
     // display all the menu options
-    printf("Please choose an option:\n");
+    printf("Please choose an option:\n\n");
     printf("(0) Exit the program\n");
     printf("(1) Add a new sportsman\n");
     printf("(2) Add a new event\n");
@@ -1070,7 +1093,7 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
     printf("(8) Check the same event\n");
     printf("(9) Print sorted events\n");
     printf("(10) Delete an event\n");
-    printf("(11) Activate new club function\n");
+    printf("(11) Activate new club function\n\n");
     printf("Enter your choice:");
     scanf("%d", &choice);
     // clear input buffer
@@ -1101,7 +1124,7 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
                 break;
             }
         }
-        if (addEvent(sportsmen_array, selected_id, &num_sportsmen) == 1) {
+        if (addEvent_to_club_events(sportsmen_array, selected_id, &num_sportsmen) == 1) {
             printf("Event added successfully.\n");
             Write_array_to_Event_Data("EventData.txt", sportsmen_array, num_sportsmen);
         }
@@ -1225,7 +1248,7 @@ void freeSportsmenArray(sportsman* sportsmen_array, int *num_sportsmen)
     //running on sportsmen array
     for (int i = 0; i < *(num_sportsmen); i++) 
     {
-        for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
+        for (int j = 0; j < sportsmen_array[i].Nevents; j++) //running on events array for each sportsman
         {
             free(sportsmen_array[i].p2events[j].p2title); //free the event titile (cause its dynamic title)
             free(sportsmen_array[i].p2events[j].p2location); //free the event location (cause its dynamic location)
