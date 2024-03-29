@@ -993,16 +993,15 @@ void printSortedEvents(const char* C, sportsman* sportsmen_array, int* num_sport
     }
 }
 
-void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_sportsmen) 
-{
-    for (int i = 0; i < *num_sportsmen; i++) 
-    {
+void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_sportsmen) {
+    
+    int is_exist = 0; // Event not found initially
+    for (int i = 0; i < *num_sportsmen; i++) {
         for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
         {
             // check if the event matches the given name (E) and year (Y)
-            if (strcmp(sportsmen_array[i].p2events[j].p2title, E) == 0 && sportsmen_array[i].p2events[j].year == Y) 
-            {
-                // free memory allocated for the event's title and location
+            if (strcmp(sportsmen_array[i].p2events[j].p2title, E) == 0 && sportsmen_array[i].p2events[j].year == Y) {
+                is_exist = 1;
                 free(sportsmen_array[i].p2events[j].p2title);
                 free(sportsmen_array[i].p2events[j].p2location);
 
@@ -1011,40 +1010,37 @@ void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_spor
                 {
                     sportsmen_array[i].p2events[k] = sportsmen_array[i].p2events[k + 1];
                 }
-                sportsmen_array[i].Nevents--; // Decrement the number of events
+                sportsmen_array[i].Nevents--; // decrement the number of events
                 sportsmen_array[i].p2events = realloc(sportsmen_array[i].p2events, sportsmen_array[i].Nevents * sizeof(event));
-
-                // change the index
-                j--;
+                j--; // -1 for index
             }
         }
     }
+    if (is_exist) 
+    {
+        printf("Event '%s' in year %d deleted successfully.\n", E, Y);
+    }
+    else 
+    {
+        printf("Event '%s' in year %d does not exist.\n", E, Y);
+    }
 }
 
-int is_event_exists_in_club_events(event* events, int numEvents, event* event) {
-    for (int i = 0; i < numEvents; i++) 
-    {
-        if (strcmp(events[i].p2title, event->p2title) == 0 &&
-            strcmp(events[i].p2location, event->p2location) == 0 &&
-            events[i].year == event->year) {
-            return 1; // Event already exists
-        }
-    }
-    return 0; // Event does not exist
-}
 
 //NewClub function gets club1 name, club2 name, sportsmen_array and a pointer number of sportsman
 //the function create file new file "Club.txt" which contains the events of sportsman from club1 and club2
-void NewClub(const char* C1, const char* C2, sportsman* sportsmen_array, int* num_sportsmen) {
+void NewClub(const char* C1, const char* C2, sportsman* sportsmen_array, int* num_sportsmen) 
+{
     FILE* fp = fopen("Club.txt", "w"); //create new file with the name "Club.txt"
     if (fp == NULL) 
     {
         printf("Error opening file.\n");
         return;
     }
-    event eventsC1[MAX_EVENT_NUMBER]; 
+
+    event eventsC1[MAX_EVENT_NUMBER]; //events array for C1
     int numEventsC1 = 0;
-    event eventsC2[MAX_EVENT_NUMBER];
+    event eventsC2[MAX_EVENT_NUMBER]; //events array for C2 
     int numEventsC2 = 0;
 
     // running on sportsmen_array
@@ -1054,23 +1050,54 @@ void NewClub(const char* C1, const char* C2, sportsman* sportsmen_array, int* nu
         {
             for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
             {
-                if (!is_event_exists_in_club_events(eventsC1, numEventsC1, &sportsmen_array[i].p2events[j])) 
+                // check if the event already exists in eventsC1
+                int eventExists = 0; //flag
+                for (int k = 0; k < numEventsC1; k++) 
                 {
+                    if (strcmp(eventsC1[k].p2title, sportsmen_array[i].p2events[j].p2title) == 0 &&
+                        strcmp(eventsC1[k].p2location, sportsmen_array[i].p2events[j].p2location) == 0 &&
+                        eventsC1[k].year == sportsmen_array[i].p2events[j].year) {
+                        eventExists = 1; //event already exists in eventsC1 array
+                        break;
+                    }
+                }
+                // If the event doesn't exist, add it to eventsC1
+                if (!eventExists) 
+                {
+                    eventsC1[numEventsC1] = sportsmen_array[i].p2events[j];
+                    numEventsC1++;
                     fprintf(fp, "%s,%s,%d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
                 }
             }
         }
+
         else if (strcmp(sportsmen_array[i].p2club, C2) == 0) 
         {
             for (int j = 0; j < sportsmen_array[i].Nevents; j++) 
             {
-                if (!is_event_exists_in_club_events(eventsC2, numEventsC2, &sportsmen_array[i].p2events[j])) 
+                // Check if the event already exists in eventsC2
+                int eventExists = 0; //flag
+                for (int k = 0; k < numEventsC2; k++) 
                 {
+                    if (strcmp(eventsC2[k].p2title, sportsmen_array[i].p2events[j].p2title) == 0 &&
+                        strcmp(eventsC2[k].p2location, sportsmen_array[i].p2events[j].p2location) == 0 &&
+                        eventsC2[k].year == sportsmen_array[i].p2events[j].year) {
+                        eventExists = 1; //event already exsists  
+                        break;
+                    }
+                }
+                // if the event doesn't exist, add it to eventsC2
+                if (!eventExists) 
+                {
+                    eventsC2[numEventsC2] = sportsmen_array[i].p2events[j];
+                    numEventsC2++;
                     fprintf(fp, "%s,%s,%d\n", sportsmen_array[i].p2events[j].p2title, sportsmen_array[i].p2events[j].p2location, sportsmen_array[i].p2events[j].year);
                 }
             }
         }
     }
+
+
     fclose(fp); // close the file
     printf("Club.txt created successfully.\n");
 }
@@ -1215,7 +1242,6 @@ int printMenu(sportsman* sportsmen_array, int num_sportsmen)
         scanf("%d", &Y);
         while (getchar() != '\n');
         deleteEvent(E, Y, sportsmen_array, &num_sportsmen);
-        printf("The event was deleted!\n");
         Write_array_to_Event_Data("EventData.txt", sportsmen_array, num_sportsmen);
         break;
     }
