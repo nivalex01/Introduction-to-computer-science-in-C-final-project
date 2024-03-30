@@ -44,3 +44,9 @@
 19,World Cup,France,2010
 19,World Cup,Spain,2014
 23,World Cup,USA,2006
+99,Running Race,Kfar Monash,2024
+99,Football Game,Kfar Yona,1973
+99,Tennis Game,Haniel,1990
+99,Swimming Race,Netanya,2025
+98,Running Race,Kfar Monash,2024
+98,Basketball Game,Afula,2023

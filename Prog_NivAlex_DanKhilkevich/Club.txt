@@ -1,2 +1,5 @@
-Bbb,Ccc,1949
-Running Race,Netanya,2025
+Running Race,Kfar Monash,2024
+Football Game,Kfar Yona,1973
+Tennis Game,Haniel,1990
+Swimming Race,Netanya,2025
+Basketball Game,Afula,2023

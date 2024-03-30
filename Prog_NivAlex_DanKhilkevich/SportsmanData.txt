@@ -1,18 +1,4 @@
 format:sportsman_id;first_name;last_name;club_name;gender
-1;Rina;Zviel;Maccabi Haifa;1
-12;Benjamin;Salomon;Beitar Jerusalem;0
-3;Avraham;Shtub;Hapoel Haifa;0
-5;Ariel;Shamir;Maccabi Hod Hasharon;0
-6;Efrat;Neter; Maccabi Haifa;1
-4;Dizza;Beimel;Maccabi Hod Hasharon;1
-21;Chait;Shaham;Hapoel Haifa;1
-2;Yael;Moses;Maccabi Netanya;1
-7;Arie;Reichman;Hapoel Tel Aviv;0
-8;Dafna;Schwartz;Hapoel Haifa;1
-9;Michal;Armoni;Hapoel Haifa;1
-10;Aharon;Gero;Maccabi Haifa;0
-18;Gidi;Cohen;Maccabi Netanya;0
-19;Inna;Gefen;Maccabi Hod Hasharon;1
-23;Iotam;Evron;Hapoel Tel Aviv;0
-25;Niv;Alex;Fc Netanya;1
-99;Dan;King;Fc Netanya;1
+154;Koshai;Don;Kihute;1
+197;Gemoa;Dav;Hastag;1
+178;Dizza;Whackef;Makif Gimel;1
