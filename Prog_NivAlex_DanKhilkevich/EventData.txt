@@ -3,8 +3,6 @@
 1,World Championship,Portugal,2018
 1,European Championship,UK,2011
 1,National Championship,Israel,2013
-1,Horse Race,Haniel,2029
-12,Bbb,Ccc,1949
 3,World Cup,USA,2006
 3,European Championship,Germany,2019
 3,European Cup,Belgium,2011
@@ -48,5 +46,6 @@
 99,Football Game,Kfar Yona,1973
 99,Tennis Game,Haniel,1990
 99,Swimming Race,Netanya,2025
+98,Running Race,Ruppin,2024
+98,Basketball Game,Afula,2026
 98,Running Race,Kfar Monash,2024
-98,Basketball Game,Afula,2023
