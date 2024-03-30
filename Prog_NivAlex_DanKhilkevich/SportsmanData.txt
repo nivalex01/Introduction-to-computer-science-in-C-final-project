@@ -14,6 +14,3 @@ format:sportsman_id;first_name;last_name;club_name;gender
 18;Gidi;Cohen;Maccabi Netanya;0
 19;Inna;Gefen;Maccabi Hod Hasharon;1
 23;Iotam;Evron;Hapoel Tel Aviv;0
-99;Niv;Alex;Maccabi Ruppin;1
-98;Dan;Khilkevich;Hapoel Ruppin;1
-96;Leo;Messi;Maccabi Ruppin;1

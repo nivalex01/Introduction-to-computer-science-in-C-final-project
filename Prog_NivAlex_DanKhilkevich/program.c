@@ -521,7 +521,7 @@ int addEvent(sportsman* sportsmen_array[], int sportsman_id, int* sportmen_arr_s
     }
     // if the sportsman is not found, return 0 with an error
     if (sportsman_index == -1) {
-        printf("Error: Sportsman with ID %d not found1111.\n", sportsman_id);
+        printf("Error: Sportsman with ID %d not found!.\n", sportsman_id);
         return 0;
     }
     capitalize_each_First_Letter(event_name); //each event will start with capital letter in the original file
@@ -987,6 +987,8 @@ void printSortedEvents(const char* C, sportsman* sportsmen_array, int* num_sport
     }
 }
 
+//deleteEvent gets event name and year, and sportsmen array, size of array
+//the function delete the event and update events array
 void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_sportsmen) {
 
     int is_exist = 0; //flag
@@ -1020,7 +1022,7 @@ void deleteEvent(const char* E, int Y, sportsman* sportsmen_array, int* num_spor
     }
 }
 
-
+//the function checks if event already exists in the event array
 int eventExists(event* eventsArray, int numEvents, event newEvent)
 {
     for (int i = 0; i < numEvents; i++) {
@@ -1129,7 +1131,7 @@ void main()
     FromFile2Sportsman("SportsmanData.txt", &sportsmen_array, num_sportsmen); //get the sportsman array 
     FromFile2Events("EventData.txt", sportsmen_array, num_sportsmen); //insert array of events for each sportsman 
     printf("-----WELCOME TO OUR SPORTSMAN MANAGEMENT SYSTEM-----\n");
-    int choice;
+    int choice; //user choice
     int selected_id;
     while (1) 
     {
