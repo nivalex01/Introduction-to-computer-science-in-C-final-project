@@ -2,6 +2,9 @@
 
 This project is a console-based sports event management system developed in the C programming language. It was submitted as a final assignment for the "Programming Principles and the C Language" course.
 
+![C Programming Language - Intro to Computer Science](https://github.com/user-attachments/assets/ae27fade-b6cb-4e0f-baa8-8579da5f17d7)
+
+
 ## 👥 Contributors
 - **Niv Alex** – nivalex.01@gmail.com  
 - **Dan Khilkevich** – danchuk213@gmail.com
