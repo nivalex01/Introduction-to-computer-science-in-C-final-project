@@ -60,3 +60,95 @@ This project demonstrates knowledge and practical application of the following C
 | 9 | Show sorted events by club |
 | 10 | Delete a specific event |
 | 11 | Create a file with all unique events of two clubs |
+
+## 🧪 Input Validation & Consistency
+
+- IDs must be numeric  
+- Names must be strings  
+- Gender must be `0` (female) or `1` (male)  
+- Club names may contain numbers (e.g., Schalke 04)  
+- Input is standardized to ensure all saved data follows a uniform format
+
+---
+
+## 🧠 Implementation Highlights
+
+- Extensive use of helper functions and modular design
+- Use of constants for easy adjustments:
+  - `MAX_LINE_LENGTH = 100`
+  - `MAX_NAME_LENGTH = 50`
+  - `MAX_CLUB_NUMBER = 200`
+  - `MAX_EVENT_NUMBER = 200`
+- Dynamic memory management for scalability
+- Comments and documentation throughout the code for clarity
+
+---
+
+## 📁 File Structure
+
+- `SportsmanData.txt`: Contains all registered athletes
+- `EventData.txt`: Contains all recorded events
+- `Club.txt`: Generated file for merged club events
+
+---
+
+## 🖼️ Screenshots
+
+Sample outputs and screenshots of functionality are included in the project documentation to demonstrate:
+
+- Adding and displaying athletes/events
+  
+  <img width="1383" height="607" alt="image" src="https://github.com/user-attachments/assets/db86eb8e-fba4-4223-acb3-eb67789004c3" />
+
+- Adding new sport event
+
+  <img width="1386" height="572" alt="image" src="https://github.com/user-attachments/assets/18520fd6-5e50-4b1d-8939-b452e9e259d4" />
+
+- Display sports man array
+
+  <img width="1371" height="680" alt="image" src="https://github.com/user-attachments/assets/7ae93612-b338-4e1e-b999-3314f7a7900b" />
+  <img width="1381" height="522" alt="image" src="https://github.com/user-attachments/assets/422d4bd9-6cb2-4160-87e6-3594fed76b6d" />
+
+
+---
+
+## 📚 Learnings & Takeaways
+
+This project taught us how to:
+
+- Design a user-friendly CLI-based application
+- Work with dynamic memory in C
+- Parse and format text input/output reliably
+- Validate user input rigorously
+- Apply structured programming principles
+
+
+## 🚀 How to Run
+
+### 🖥️ Option 1: Using Visual Studio (Recommended)
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/nivalex01/Introduction-to-computer-science-in-C-final-project.git
+
+2. **Open the solution file:**
+   
+   Navigate to the `Prog_NivAlex_DanKhilkevich` folder and open the `Prog_NivAlex_DanKhilkevich.sln` file in Visual Studio.
+   
+3. **Build the project:**
+
+   From the top menu, click **Build > Build Solution** (`Ctrl+Shift+B`).
+
+4. **Run the program:**
+
+   Press `Ctrl + F5` or click **Debug > Start Without Debugging**.
+
+   
+### 🧰 Option 2: Using Command Line (GCC / Clang)
+
+If you're not using Visual Studio, you can compile the program using GCC (on Linux/macOS/WSL):
+
+```bash
+gcc -o sportman_app program.c
+./sportman_app
